@@ -1,32 +1,15 @@
+import { Routes, Route } from 'react-router-dom'
+import LandingPage from './pages/LandingPage'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+
 function App() {
   return (
-    <div className="container">
-      <div className="card">
-        <h1>Iniciar sesión</h1>
-
-        <form className="form">
-          <div className="field">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="Introduce tu email"
-            />
-          </div>
-
-          <div className="field">
-            <label htmlFor="password">Contraseña</label>
-            <input
-              id="password"
-              type="password"
-              placeholder="Introduce tu contraseña"
-            />
-          </div>
-
-          <button type="submit">Entrar</button>
-        </form>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+    </Routes>
   )
 }
 
