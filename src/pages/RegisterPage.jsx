@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Toast from '../components/common/Toast'
 import { getLocations, getProvinces } from '../services/locationService'
 import { registerClient } from '../services/clientAuthService'
+import { registerTechnician } from '../services/technicianAuthService'
 import { getSectors } from '../services/sectorService'
-import Toast from '../components/common/Toast'
-import { mapBackendErrorToSpanish } from '../utils/errorMapper'
+import { mapRegisterClientErrorToSpanish } from '../utils/registerClientErrorMapper'
+import { mapRegisterTechnicianErrorToSpanish } from '../utils/registerTechnicianErrorMapper'
 import '../styles/register.css'
 
 const INITIAL_FORM_DATA = {
@@ -22,7 +24,7 @@ const INITIAL_FORM_DATA = {
     scheduleAvailability: '',
 }
 
-const INITIAL_FIELD_ERRORS = {
+const INITIAL_CLIENT_FIELD_ERRORS = {
     name: '',
     surname: '',
     email: '',
@@ -32,12 +34,23 @@ const INITIAL_FIELD_ERRORS = {
     city: '',
 }
 
+const INITIAL_TECHNICIAN_FIELD_ERRORS = {
+    name: '',
+    surname: '',
+    email: '',
+    password: '',
+    phone: '',
+    province: '',
+    city: '',
+    sectorId: '',
+}
+
 function RegisterPage() {
     const navigate = useNavigate()
 
     const [role, setRole] = useState('client')
     const [formData, setFormData] = useState(INITIAL_FORM_DATA)
-    const [fieldErrors, setFieldErrors] = useState(INITIAL_FIELD_ERRORS)
+    const [fieldErrors, setFieldErrors] = useState(INITIAL_CLIENT_FIELD_ERRORS)
     const [provinceCode, setProvinceCode] = useState('')
     const [showPassword, setShowPassword] = useState(false)
 
@@ -118,27 +131,47 @@ function RegisterPage() {
         switch (fieldName) {
             case 'name':
                 return value.trim() ? '' : 'El nombre es obligatorio'
-
             case 'surname':
                 return value.trim() ? '' : 'Los apellidos son obligatorios'
-
             case 'email':
                 return value.trim() ? '' : 'El email es obligatorio'
-
             case 'password':
                 return value.trim() ? '' : 'La contraseña es obligatoria'
-
             case 'phone':
                 if (!value.trim()) return 'El número de teléfono es obligatorio'
                 if (value.length !== 9) return 'El número de teléfono debe tener 9 dígitos'
                 return ''
-
             case 'province':
                 return value.trim() ? '' : 'Debes seleccionar una provincia'
-
             case 'city':
                 return value.trim() ? '' : 'Debes seleccionar una ciudad'
+            default:
+                return ''
+        }
+    }
 
+    function validateTechnicianField(fieldName, value) {
+        switch (fieldName) {
+            case 'name':
+                return value.trim() ? '' : 'El nombre es obligatorio'
+            case 'surname':
+                return value.trim() ? '' : 'Los apellidos son obligatorios'
+            case 'email':
+                return value.trim() ? '' : 'El email es obligatorio'
+            case 'password':
+                if (!value.trim()) return 'La contraseña es obligatoria'
+                if (value.length < 8) return 'La contraseña debe tener al menos 8 caracteres'
+                return ''
+            case 'phone':
+                if (!value.trim()) return 'El número de teléfono es obligatorio'
+                if (value.length !== 9) return 'El número de teléfono debe tener 9 dígitos'
+                return ''
+            case 'province':
+                return value.trim() ? '' : 'Debes seleccionar una provincia'
+            case 'city':
+                return value.trim() ? '' : 'Debes seleccionar una ciudad'
+            case 'sectorId':
+                return value ? '' : 'Debes seleccionar un sector'
             default:
                 return ''
         }
@@ -156,8 +189,27 @@ function RegisterPage() {
         }
     }
 
+    function validateTechnicianForm(currentFormData) {
+        return {
+            name: validateTechnicianField('name', currentFormData.name),
+            surname: validateTechnicianField('surname', currentFormData.surname),
+            email: validateTechnicianField('email', currentFormData.email),
+            password: validateTechnicianField('password', currentFormData.password),
+            phone: validateTechnicianField('phone', currentFormData.phone),
+            province: validateTechnicianField('province', currentFormData.province),
+            city: validateTechnicianField('city', currentFormData.city),
+            sectorId: validateTechnicianField('sectorId', currentFormData.sectorId),
+        }
+    }
+
     function hasValidationErrors(errors) {
         return Object.values(errors).some((error) => error !== '')
+    }
+
+    function getInitialErrorsByRole(newRole) {
+        return newRole === 'client'
+            ? INITIAL_CLIENT_FIELD_ERRORS
+            : INITIAL_TECHNICIAN_FIELD_ERRORS
     }
 
     function resetLocationFields() {
@@ -165,12 +217,6 @@ function RegisterPage() {
 
         setFormData((previousData) => ({
             ...previousData,
-            province: '',
-            city: '',
-        }))
-
-        setFieldErrors((previousErrors) => ({
-            ...previousErrors,
             province: '',
             city: '',
         }))
@@ -191,7 +237,8 @@ function RegisterPage() {
         setRole(newRole)
         setFormError('')
         setToastMessage('')
-        setFieldErrors(INITIAL_FIELD_ERRORS)
+        setShowPassword(false)
+        setFieldErrors(getInitialErrorsByRole(newRole))
 
         resetLocationFields()
         resetRoleSpecificFields()
@@ -206,10 +253,15 @@ function RegisterPage() {
             [name]: nextValue,
         }))
 
-        if (role === 'client' && Object.hasOwn(INITIAL_FIELD_ERRORS, name)) {
+        if (fieldErrors[name] !== undefined) {
+            const nextError =
+                role === 'client'
+                    ? validateClientField(name, nextValue)
+                    : validateTechnicianField(name, nextValue)
+
             setFieldErrors((previousErrors) => ({
                 ...previousErrors,
-                [name]: validateClientField(name, nextValue),
+                [name]: nextError,
             }))
         }
     }
@@ -222,12 +274,15 @@ function RegisterPage() {
             phone: onlyDigits,
         }))
 
-        if (role === 'client') {
-            setFieldErrors((previousErrors) => ({
-                ...previousErrors,
-                phone: validateClientField('phone', onlyDigits),
-            }))
-        }
+        const phoneError =
+            role === 'client'
+                ? validateClientField('phone', onlyDigits)
+                : validateTechnicianField('phone', onlyDigits)
+
+        setFieldErrors((previousErrors) => ({
+            ...previousErrors,
+            phone: phoneError,
+        }))
     }
 
     function handleProvinceChange(event) {
@@ -237,9 +292,9 @@ function RegisterPage() {
             (province) => province.code === selectedProvinceCode,
         )
 
-        setProvinceCode(selectedProvinceCode)
-
         const provinceLabel = selectedProvince ? selectedProvince.label : ''
+
+        setProvinceCode(selectedProvinceCode)
 
         setFormData((previousData) => ({
             ...previousData,
@@ -247,13 +302,14 @@ function RegisterPage() {
             city: '',
         }))
 
-        if (role === 'client') {
-            setFieldErrors((previousErrors) => ({
-                ...previousErrors,
-                province: validateClientField('province', provinceLabel),
-                city: '',
-            }))
-        }
+        setFieldErrors((previousErrors) => ({
+            ...previousErrors,
+            province:
+                role === 'client'
+                    ? validateClientField('province', provinceLabel)
+                    : validateTechnicianField('province', provinceLabel),
+            city: '',
+        }))
     }
 
     function handleCityChange(event) {
@@ -264,24 +320,33 @@ function RegisterPage() {
             city: selectedCityLabel,
         }))
 
-        if (role === 'client') {
-            setFieldErrors((previousErrors) => ({
-                ...previousErrors,
-                city: validateClientField('city', selectedCityLabel),
-            }))
-        }
+        setFieldErrors((previousErrors) => ({
+            ...previousErrors,
+            city:
+                role === 'client'
+                    ? validateClientField('city', selectedCityLabel)
+                    : validateTechnicianField('city', selectedCityLabel),
+        }))
     }
 
     function handleBlur(event) {
         const { name, value } = event.target
 
-        if (role !== 'client') return
-        if (!Object.hasOwn(INITIAL_FIELD_ERRORS, name)) return
+        if (fieldErrors[name] === undefined) return
+
+        const nextError =
+            role === 'client'
+                ? validateClientField(name, value)
+                : validateTechnicianField(name, value)
 
         setFieldErrors((previousErrors) => ({
             ...previousErrors,
-            [name]: validateClientField(name, value),
+            [name]: nextError,
         }))
+    }
+
+    function getFieldClassName(fieldName) {
+        return fieldErrors[fieldName] ? 'input-error' : ''
     }
 
     async function handleSubmit(event) {
@@ -324,16 +389,7 @@ function RegisterPage() {
                 console.error('Error en registro cliente:', err)
 
                 if (err.response) {
-                    const backendMessage =
-                        err.response.data?.message ||
-                        err.response.data?.error ||
-                        err.response.data ||
-                        ''
-
-                    const translatedMessage = mapBackendErrorToSpanish(
-                        typeof backendMessage === 'string' ? backendMessage : '',
-                    )
-
+                    const translatedMessage = mapRegisterClientErrorToSpanish(err.response.data)
                     setToastMessage(translatedMessage)
                 } else if (err.request) {
                     setToastMessage('No se recibió respuesta del servidor')
@@ -343,13 +399,58 @@ function RegisterPage() {
             } finally {
                 setSubmitting(false)
             }
-        } else {
-            setFormError('El registro de técnico lo haremos después')
-        }
-    }
 
-    function getFieldClassName(fieldName) {
-        return fieldErrors[fieldName] ? 'input-error' : ''
+            return
+        }
+
+        const validationErrors = validateTechnicianForm(formData)
+        setFieldErrors(validationErrors)
+
+        if (hasValidationErrors(validationErrors)) {
+            setFormError('Revisa los campos obligatorios marcados en rojo')
+            return
+        }
+
+        const technicianPayload = {
+            name: formData.name.trim(),
+            surname: formData.surname.trim(),
+            email: formData.email.trim(),
+            password: formData.password,
+            phone: formData.phone,
+            province: formData.province,
+            city: formData.city,
+            aboutMe: formData.aboutMe.trim() || null,
+            sectorId: Number(formData.sectorId),
+            priceDescription: formData.priceDescription.trim() || null,
+            emergencyAvailability: formData.emergencyAvailability,
+            scheduleAvailability: formData.scheduleAvailability.trim() || null,
+        }
+
+        try {
+            setSubmitting(true)
+
+            const responseData = await registerTechnician(technicianPayload)
+
+            navigate('/technician/home', {
+                replace: true,
+                state: {
+                    technician: responseData,
+                },
+            })
+        } catch (err) {
+            console.error('Error en registro técnico:', err)
+
+            if (err.response) {
+                const translatedMessage = mapRegisterTechnicianErrorToSpanish(err.response.data)
+                setToastMessage(translatedMessage)
+            } else if (err.request) {
+                setToastMessage('No se recibió respuesta del servidor')
+            } else {
+                setToastMessage('Error al preparar la petición')
+            }
+        } finally {
+            setSubmitting(false)
+        }
     }
 
     return (
@@ -569,24 +670,31 @@ function RegisterPage() {
                         {role === 'technician' && (
                             <>
                                 <div className="register-form__field register-form__field--full">
-                                    <label htmlFor="sectorId">Sector</label>
+                                    <label htmlFor="sectorId">
+                                        Sector <span className="required-mark">*</span>
+                                    </label>
                                     <select
                                         id="sectorId"
                                         name="sectorId"
                                         value={formData.sectorId}
                                         onChange={handleChange}
+                                        onBlur={handleBlur}
                                         disabled={loadingSectors}
+                                        className={getFieldClassName('sectorId')}
                                     >
                                         <option value="">
                                             {loadingSectors ? 'Cargando sectores...' : 'Selecciona tu sector'}
                                         </option>
 
                                         {sectors.map((sector) => (
-                                            <option key={sector.id} value={sector.id}>
+                                            <option key={sector.id} value={String(sector.id)}>
                                                 {sector.name}
                                             </option>
                                         ))}
                                     </select>
+                                    {fieldErrors.sectorId && (
+                                        <span className="field-error-text">{fieldErrors.sectorId}</span>
+                                    )}
                                 </div>
 
                                 <div className="register-form__field register-form__field--full">
