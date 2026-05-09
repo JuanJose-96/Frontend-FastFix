@@ -4,24 +4,24 @@ body {
     background-color: #f4f6f8;
 }
 
-.auth-page {
+.login-page {
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 24px;
+    padding: 32px 20px;
 }
 
-.auth-card {
+.login-card {
     width: 100%;
-    max-width: 460px;
+    max-width: 520px;
     background-color: white;
     padding: 32px;
-    border-radius: 18px;
+    border-radius: 20px;
     box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
 }
 
-.auth-card__title {
+.login-card__title {
     margin: 0 0 24px;
     text-align: center;
     color: #16324f;
@@ -49,30 +49,77 @@ body {
     border-color: #16324f;
 }
 
-.auth-form {
+.login-form {
     display: flex;
     flex-direction: column;
     gap: 16px;
 }
 
-.auth-form__field {
+.login-form__field {
     display: flex;
     flex-direction: column;
 }
 
-.auth-form__field label {
+.login-form__field label {
     margin-bottom: 8px;
     font-weight: 700;
 }
 
-.auth-form__field input {
+.required-mark {
+    color: #c62828;
+    margin-left: 4px;
+}
+
+.login-form__field input {
     padding: 12px;
     border: 1px solid #cbd5e1;
     border-radius: 10px;
     font-size: 14px;
+    font-family: inherit;
+    background-color: white;
 }
 
-.auth-form__submit {
+.input-error {
+    border-color: #c62828 !important;
+}
+
+.field-error-text {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #c62828;
+}
+
+.password-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: white;
+}
+
+.password-input.input-error {
+    border-color: #c62828;
+}
+
+.password-input input {
+    border: none;
+    outline: none;
+    flex: 1;
+    padding: 12px;
+    font-size: 14px;
+}
+
+.password-input__toggle {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0 14px;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.login-form__submit {
     margin-top: 8px;
     padding: 14px;
     border: none;
@@ -82,4 +129,66 @@ body {
     font-size: 16px;
     font-weight: 700;
     cursor: pointer;
+}
+
+.login-form__submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.login-form__error {
+    margin: 0;
+    color: #c62828;
+    font-size: 14px;
+}
+
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    min-width: 320px;
+    max-width: 420px;
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    animation: slideInToast 0.25s ease-out;
+}
+
+.toast--error {
+    background-color: #fdecec;
+    border: 1px solid #f3b7b7;
+    color: #9f1d1d;
+}
+
+.toast__message {
+    font-size: 14px;
+    line-height: 1.45;
+    font-weight: 600;
+}
+
+.toast__close {
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+}
+
+@keyframes slideInToast {
+    from {
+        opacity: 0;
+        transform: translateX(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
