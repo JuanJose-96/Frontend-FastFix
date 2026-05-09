@@ -1,0 +1,128 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+}
+
+.client-home-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 32px 20px;
+}
+
+.client-home-card {
+    width: 100%;
+    max-width: 900px;
+    background-color: white;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 8px 28px rgba(15, 23, 42, 0.08);
+}
+
+.client-home-card__title {
+    margin: 0 0 12px;
+    color: #16324f;
+    text-align: center;
+}
+
+.client-home-card__subtitle {
+    margin: 0 0 28px;
+    text-align: center;
+    color: #475569;
+    font-size: 16px;
+}
+
+.client-home-info {
+    margin-bottom: 28px;
+}
+
+.client-home-info__title {
+    margin: 0 0 20px;
+    color: #16324f;
+    font-size: 22px;
+}
+
+.client-home-info__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.client-home-info__item {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.client-home-info__label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.client-home-info__value {
+    font-size: 16px;
+    color: #1f2a37;
+    word-break: break-word;
+}
+
+.client-home-empty {
+    margin-bottom: 28px;
+    padding: 20px;
+    border-radius: 14px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+}
+
+.client-home-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.client-home-actions__button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    padding: 14px 18px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 15px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.client-home-actions__button--primary {
+    background-color: #16324f;
+    color: white;
+    border: none;
+}
+
+.client-home-actions__button--secondary {
+    background-color: white;
+    color: #16324f;
+    border: 1px solid #cbd5e1;
+}
+
+@media (max-width: 768px) {
+    .client-home-card {
+        padding: 24px;
+    }
+
+    .client-home-info__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .client-home-actions {
+        flex-direction: column;
+    }
+}
