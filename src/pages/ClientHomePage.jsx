@@ -1,87 +1,138 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import ClientHomeHeader from '../components/client-home/ClientHomeHeader'
+import ClientHomeHero from '../components/client-home/ClientHomeHero'
+import TechnicianSection from '../components/client-home/TechnicianSection'
+import { searchTechnicians } from '../services/technicianSearchService'
+import { getClientSession, saveClientSession } from '../utils/clientSession'
 import '../styles/client-home.css'
+
+const MAX_TECHNICIANS_PER_SECTION = 15
 
 function ClientHomePage() {
     const location = useLocation()
     const navigate = useNavigate()
 
-    const client = location.state?.client
+    const [topRatedTechnicians, setTopRatedTechnicians] = useState([])
+    const [nearbyTechnicians, setNearbyTechnicians] = useState([])
+    const [emergencyTechnicians, setEmergencyTechnicians] = useState([])
+    const [loadingHome, setLoadingHome] = useState(true)
+    const [homeError, setHomeError] = useState('')
 
-    function handleGoToLanding() {
-        navigate('/')
+    const clientFromState = location.state?.client
+    const clientFromStorage = getClientSession()
+
+    const client = useMemo(() => {
+        return clientFromState || clientFromStorage
+    }, [clientFromState, clientFromStorage])
+
+    useEffect(() => {
+        if (clientFromState) {
+            saveClientSession(clientFromState)
+        }
+    }, [clientFromState])
+
+    useEffect(() => {
+        if (!client) {
+            navigate('/login', { replace: true })
+        }
+    }, [client, navigate])
+
+    function getUniqueTechnicians(technicians) {
+        const seenIds = new Set()
+
+        return technicians.filter((technician) => {
+            const uniqueKey =
+                technician.id ?? `${technician.email}-${technician.name}-${technician.surname}`
+
+            if (seenIds.has(uniqueKey)) {
+                return false
+            }
+
+            seenIds.add(uniqueKey)
+            return true
+        })
+    }
+
+    useEffect(() => {
+        if (!client) return
+
+        async function loadHomeData() {
+            try {
+                setLoadingHome(true)
+                setHomeError('')
+
+                const allTechnicians = await searchTechnicians()
+                const uniqueAllTechnicians = getUniqueTechnicians(allTechnicians)
+
+                const sortedTopRated = [...uniqueAllTechnicians]
+                    .sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0))
+                    .slice(0, MAX_TECHNICIANS_PER_SECTION)
+
+                const sameProvinceTechnicians = uniqueAllTechnicians
+                    .filter((technician) => technician.province === client.province)
+                    .slice(0, MAX_TECHNICIANS_PER_SECTION)
+
+                const emergencyProvinceTechnicians = uniqueAllTechnicians
+                    .filter(
+                        (technician) =>
+                            technician.province === client.province &&
+                            technician.emergencyAvailability,
+                    )
+                    .slice(0, MAX_TECHNICIANS_PER_SECTION)
+
+                setTopRatedTechnicians(sortedTopRated)
+                setNearbyTechnicians(sameProvinceTechnicians)
+                setEmergencyTechnicians(emergencyProvinceTechnicians)
+            } catch (error) {
+                console.error('Error cargando la home del cliente:', error)
+                setHomeError('No se pudo cargar la información principal')
+            } finally {
+                setLoadingHome(false)
+            }
+        }
+
+        loadHomeData()
+    }, [client])
+
+    if (!client) {
+        return null
     }
 
     return (
-        <div className="client-home-page">
-            <div className="client-home-card">
-                <h1 className="client-home-card__title">Bienvenido a FastFix</h1>
+        <div className="client-home">
+            <ClientHomeHeader clientName={client.name} />
 
-                <p className="client-home-card__subtitle">
-                    Has accedido correctamente como cliente.
-                </p>
+            <main className="client-home__main">
+                <ClientHomeHero client={client} />
 
-                {client ? (
-                    <div className="client-home-info">
-                        <h2 className="client-home-info__title">Datos recibidos</h2>
+                {homeError && <p className="client-home__error">{homeError}</p>}
 
-                        <div className="client-home-info__grid">
-                            <div className="client-home-info__item">
-                                <span className="client-home-info__label">Nombre</span>
-                                <span className="client-home-info__value">{client.name}</span>
-                            </div>
+                {!loadingHome && (
+                    <>
+                        <TechnicianSection
+                            title="Técnicos cerca de ti"
+                            description="Técnicos de tu misma provincia."
+                            technicians={nearbyTechnicians}
+                            emptyMessage="No hay técnicos disponibles todavía en tu provincia."
+                        />
 
-                            <div className="client-home-info__item">
-                                <span className="client-home-info__label">Apellidos</span>
-                                <span className="client-home-info__value">{client.surname}</span>
-                            </div>
+                        <TechnicianSection
+                            title="Mejor valorados"
+                            description="Técnicos mejores valorados de todo el país."
+                            technicians={topRatedTechnicians}
+                            emptyMessage="Todavía no hay suficientes valoraciones para mostrar este bloque."
+                        />
 
-                            <div className="client-home-info__item">
-                                <span className="client-home-info__label">Email</span>
-                                <span className="client-home-info__value">{client.email}</span>
-                            </div>
-
-                            <div className="client-home-info__item">
-                                <span className="client-home-info__label">Teléfono</span>
-                                <span className="client-home-info__value">{client.phone}</span>
-                            </div>
-
-                            <div className="client-home-info__item">
-                                <span className="client-home-info__label">Provincia</span>
-                                <span className="client-home-info__value">{client.province}</span>
-                            </div>
-
-                            <div className="client-home-info__item">
-                                <span className="client-home-info__label">Ciudad</span>
-                                <span className="client-home-info__value">{client.city}</span>
-                            </div>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="client-home-empty">
-                        <p>
-                            No hay datos del cliente en esta navegación. Esta pantalla es temporal
-                            y sirve para validar el registro y el login.
-                        </p>
-                    </div>
+                        <TechnicianSection
+                            title="Urgencias en tu provincia"
+                            description="Técnicos de tu provincia que aceptan servicios urgentes."
+                            technicians={emergencyTechnicians}
+                            emptyMessage="No hay técnicos con servicio de urgencias disponibles en tu provincia."
+                        />
+                    </>
                 )}
-
-                <div className="client-home-actions">
-                    <button
-                        type="button"
-                        className="client-home-actions__button client-home-actions__button--primary"
-                        onClick={handleGoToLanding}
-                    >
-                        Volver a la landing
-                    </button>
-
-                    <Link
-                        to="/register"
-                        className="client-home-actions__button client-home-actions__button--secondary"
-                    >
-                        Ir a registro
-                    </Link>
-                </div>
-            </div>
+            </main>
         </div>
     )
 }
