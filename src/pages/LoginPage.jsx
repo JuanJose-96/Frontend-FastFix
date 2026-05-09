@@ -1,50 +1,243 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Toast from '../components/common/Toast'
+import { loginClient } from '../services/clientAuthService'
+import { mapLoginErrorToSpanish } from '../utils/loginErrorMapper'
 import '../styles/login.css'
 
+const INITIAL_FORM_DATA = {
+    email: '',
+    password: '',
+}
+
+const INITIAL_FIELD_ERRORS = {
+    email: '',
+    password: '',
+}
+
 function LoginPage() {
+    const navigate = useNavigate()
+
     const [role, setRole] = useState('client')
+    const [formData, setFormData] = useState(INITIAL_FORM_DATA)
+    const [fieldErrors, setFieldErrors] = useState(INITIAL_FIELD_ERRORS)
+    const [showPassword, setShowPassword] = useState(false)
+    const [submitting, setSubmitting] = useState(false)
+    const [formError, setFormError] = useState('')
+    const [toastMessage, setToastMessage] = useState('')
+
+    useEffect(() => {
+        if (!toastMessage) return
+
+        const timeoutId = setTimeout(() => {
+            setToastMessage('')
+        }, 4000)
+
+        return () => clearTimeout(timeoutId)
+    }, [toastMessage])
+
+    function validateRequiredField(fieldName, value) {
+        switch (fieldName) {
+            case 'email':
+                return value.trim() ? '' : 'El email es obligatorio'
+            case 'password':
+                return value.trim() ? '' : 'La contraseña es obligatoria'
+            default:
+                return ''
+        }
+    }
+
+    function validateRequiredFields(currentFormData) {
+        return {
+            email: validateRequiredField('email', currentFormData.email),
+            password: validateRequiredField('password', currentFormData.password),
+        }
+    }
+
+    function hasValidationErrors(errors) {
+        return Object.values(errors).some((error) => error !== '')
+    }
+
+    function handleRoleChange(newRole) {
+        setRole(newRole)
+        setFormData(INITIAL_FORM_DATA)
+        setFieldErrors(INITIAL_FIELD_ERRORS)
+        setFormError('')
+        setToastMessage('')
+        setShowPassword(false)
+    }
+
+    function handleChange(event) {
+        const { name, value } = event.target
+
+        setFormData((previousData) => ({
+            ...previousData,
+            [name]: value,
+        }))
+
+        if (fieldErrors[name]) {
+            setFieldErrors((previousErrors) => ({
+                ...previousErrors,
+                [name]: validateRequiredField(name, value),
+            }))
+        }
+    }
+
+    function handleBlur(event) {
+        const { name, value } = event.target
+
+        setFieldErrors((previousErrors) => ({
+            ...previousErrors,
+            [name]: validateRequiredField(name, value),
+        }))
+    }
+
+    function getFieldClassName(fieldName) {
+        return fieldErrors[fieldName] ? 'input-error' : ''
+    }
+
+    async function handleSubmit(event) {
+        event.preventDefault()
+
+        setFormError('')
+        setToastMessage('')
+
+        const validationErrors = validateRequiredFields(formData)
+        setFieldErrors(validationErrors)
+
+        if (hasValidationErrors(validationErrors)) {
+            setFormError('Revisa los campos obligatorios marcados en rojo')
+            return
+        }
+
+        if (role === 'client') {
+            const credentials = {
+                email: formData.email.trim(),
+                password: formData.password,
+            }
+
+            try {
+                setSubmitting(true)
+
+                const responseData = await loginClient(credentials)
+
+                navigate('/client/home', {
+                    replace: true,
+                    state: {
+                        client: responseData,
+                    },
+                })
+            } catch (err) {
+                console.error('Error en login cliente:', err)
+
+                if (err.response) {
+                    const translatedMessage = mapLoginErrorToSpanish(err.response.data)
+                    setToastMessage(translatedMessage)
+                } else if (err.request) {
+                    setToastMessage('No se recibió respuesta del servidor')
+                } else {
+                    setToastMessage('Error al preparar la petición')
+                }
+
+
+            } finally {
+                setSubmitting(false)
+            }
+        } else {
+            setToastMessage('El login de técnico lo haremos después')
+        }
+    }
 
     return (
-        <div className="auth-page">
-            <div className="auth-card">
-                <h1 className="auth-card__title">Iniciar sesión</h1>
+        <div className="login-page">
+            <Toast
+                message={toastMessage}
+                type="error"
+                onClose={() => setToastMessage('')}
+            />
+
+            <div className="login-card">
+                <h1 className="login-card__title">Iniciar sesión</h1>
 
                 <div className="role-selector">
                     <button
                         type="button"
-                        className={`role-selector__button ${role === 'client' ? 'role-selector__button--active' : ''}`}
-                        onClick={() => setRole('client')}
+                        className={`role-selector__button ${role === 'client' ? 'role-selector__button--active' : ''
+                            }`}
+                        onClick={() => handleRoleChange('client')}
                     >
                         Soy cliente
                     </button>
 
                     <button
                         type="button"
-                        className={`role-selector__button ${role === 'technician' ? 'role-selector__button--active' : ''}`}
-                        onClick={() => setRole('technician')}
+                        className={`role-selector__button ${role === 'technician' ? 'role-selector__button--active' : ''
+                            }`}
+                        onClick={() => handleRoleChange('technician')}
                     >
                         Soy técnico
                     </button>
                 </div>
 
-                <form className="auth-form">
-                    <div className="auth-form__field">
-                        <label htmlFor="email">Email</label>
-                        <input id="email" type="email" placeholder="Introduce tu email" />
-                    </div>
-
-                    <div className="auth-form__field">
-                        <label htmlFor="password">Contraseña</label>
+                <form className="login-form" onSubmit={handleSubmit} noValidate>
+                    <div className="login-form__field">
+                        <label htmlFor="email">
+                            Email <span className="required-mark">*</span>
+                        </label>
                         <input
-                            id="password"
-                            type="password"
-                            placeholder="Introduce tu contraseña"
+                            id="email"
+                            name="email"
+                            type="email"
+                            placeholder="Introduce tu email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            onBlur={handleBlur}
+                            className={getFieldClassName('email')}
                         />
+                        {fieldErrors.email && (
+                            <span className="field-error-text">{fieldErrors.email}</span>
+                        )}
                     </div>
 
-                    <button type="submit" className="auth-form__submit">
-                        Entrar como {role === 'client' ? 'cliente' : 'técnico'}
+                    <div className="login-form__field">
+                        <label htmlFor="password">
+                            Contraseña <span className="required-mark">*</span>
+                        </label>
+                        <div className={`password-input ${getFieldClassName('password')}`}>
+                            <input
+                                id="password"
+                                name="password"
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="Introduce tu contraseña"
+                                value={formData.password}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                            />
+                            <button
+                                type="button"
+                                className="password-input__toggle"
+                                onClick={() => setShowPassword((previous) => !previous)}
+                                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                            >
+                                {showPassword ? '🙈' : '👁'}
+                            </button>
+                        </div>
+                        {fieldErrors.password && (
+                            <span className="field-error-text">{fieldErrors.password}</span>
+                        )}
+                    </div>
+
+                    <button
+                        type="submit"
+                        className="login-form__submit"
+                        disabled={submitting}
+                    >
+                        {submitting
+                            ? 'Accediendo...'
+                            : `Entrar como ${role === 'client' ? 'cliente' : 'técnico'}`}
                     </button>
+
+                    {formError && <p className="login-form__error">{formError}</p>}
                 </form>
             </div>
         </div>
