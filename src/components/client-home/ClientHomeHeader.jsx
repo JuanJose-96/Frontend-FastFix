@@ -19,6 +19,11 @@ function ClientHomeHeader({
         navigate('/client/explore')
     }
 
+    function handleGoProfile() {
+        if (location.pathname === '/client/profile') return
+        navigate('/client/profile')
+    }
+
     function handleLogout() {
         clearClientSession()
         navigate('/', { replace: true })
@@ -56,7 +61,11 @@ function ClientHomeHeader({
                     Explorar
                 </button>
 
-                <button type="button" className="client-home-header__link" disabled>
+                <button
+                    type="button"
+                    className="client-home-header__link"
+                    onClick={handleGoProfile}
+                >
                     Perfil
                 </button>
             </nav>
