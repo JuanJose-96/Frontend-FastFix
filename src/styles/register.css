@@ -1,1 +1,273 @@
-@import './login.css';
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+}
+
+.register-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 32px 20px;
+}
+
+.register-card {
+    width: 100%;
+    max-width: 920px;
+    background-color: white;
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
+}
+
+.register-card__title {
+    margin: 0 0 24px;
+    text-align: center;
+    color: #16324f;
+}
+
+.role-selector {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.role-selector__button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background-color: white;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.role-selector__button--active {
+    background-color: #16324f;
+    color: white;
+    border-color: #16324f;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.register-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.register-form__field {
+    display: flex;
+    flex-direction: column;
+}
+
+.register-form__field--full {
+    grid-column: 1 / -1;
+}
+
+.register-form__field label {
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.required-mark {
+    color: #c62828;
+    margin-left: 4px;
+}
+
+.optional-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: #64748b;
+}
+
+.register-form__field input,
+.register-form__field select,
+.register-form__field textarea {
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: inherit;
+    background-color: white;
+}
+
+.register-form__field textarea {
+    resize: none;
+}
+
+.input-error {
+    border-color: #c62828 !important;
+}
+
+.field-error-text {
+    margin-top: 6px;
+    font-size: 13px;
+    color: #c62828;
+}
+
+.phone-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: white;
+}
+
+.phone-input.input-error {
+    border-color: #c62828;
+}
+
+.phone-input__prefix {
+    background-color: #f8fafc;
+    border-right: 1px solid #cbd5e1;
+    padding: 12px 14px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.phone-input input {
+    border: none;
+    outline: none;
+    flex: 1;
+    padding: 12px;
+    font-size: 14px;
+}
+
+.password-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid #cbd5e1;
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: white;
+}
+
+.password-input.input-error {
+    border-color: #c62828;
+}
+
+.password-input input {
+    border: none;
+    outline: none;
+    flex: 1;
+    padding: 12px;
+    font-size: 14px;
+}
+
+.password-input__toggle {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 0 14px;
+    font-size: 18px;
+    line-height: 1;
+}
+
+.register-form__checkbox label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0;
+    font-weight: 700;
+}
+
+.register-form__submit {
+    margin-top: 8px;
+    padding: 14px;
+    border: none;
+    border-radius: 12px;
+    background-color: #16324f;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.register-form__submit:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.register-form__error {
+    margin: 0;
+    color: #c62828;
+    font-size: 14px;
+}
+
+.register-form__success {
+    margin: 0;
+    color: #2e7d32;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .register-card {
+        padding: 24px;
+    }
+
+    .register-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .register-form__field--full {
+        grid-column: auto;
+    }
+}
+
+.toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    min-width: 320px;
+    max-width: 420px;
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 12px 30px rgba(15, 23, 42, 0.14);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    animation: slideInToast 0.25s ease-out;
+}
+
+.toast--error {
+    background-color: #fdecec;
+    border: 1px solid #f3b7b7;
+    color: #9f1d1d;
+}
+
+.toast__message {
+    font-size: 14px;
+    line-height: 1.45;
+    font-weight: 600;
+}
+
+.toast__close {
+    border: none;
+    background: transparent;
+    color: inherit;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+}
+
+@keyframes slideInToast {
+    from {
+        opacity: 0;
+        transform: translateX(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
