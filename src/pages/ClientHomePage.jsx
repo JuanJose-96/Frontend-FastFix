@@ -13,6 +13,8 @@ function ClientHomePage() {
     const location = useLocation()
     const navigate = useNavigate()
 
+    const [storedClient] = useState(() => getClientSession())
+
     const [topRatedTechnicians, setTopRatedTechnicians] = useState([])
     const [nearbyTechnicians, setNearbyTechnicians] = useState([])
     const [emergencyTechnicians, setEmergencyTechnicians] = useState([])
@@ -20,11 +22,10 @@ function ClientHomePage() {
     const [homeError, setHomeError] = useState('')
 
     const clientFromState = location.state?.client
-    const clientFromStorage = getClientSession()
 
     const client = useMemo(() => {
-        return clientFromState || clientFromStorage
-    }, [clientFromState, clientFromStorage])
+        return clientFromState || storedClient
+    }, [clientFromState, storedClient])
 
     useEffect(() => {
         if (clientFromState) {
@@ -101,7 +102,11 @@ function ClientHomePage() {
 
     return (
         <div className="client-home">
-            <ClientHomeHeader clientName={client.name} />
+            <ClientHomeHeader
+                clientName={client.name}
+                clientSurname={client.surname}
+                clientProfileImageUrl={client.profileImageUrl}
+            />
 
             <main className="client-home__main">
                 <ClientHomeHero client={client} />
@@ -119,7 +124,7 @@ function ClientHomePage() {
 
                         <TechnicianSection
                             title="Mejor valorados"
-                            description="Técnicos mejores valorados de todo el país."
+                            description="Técnicos con mejor valoración del país."
                             technicians={topRatedTechnicians}
                             emptyMessage="Todavía no hay suficientes valoraciones para mostrar este bloque."
                         />
