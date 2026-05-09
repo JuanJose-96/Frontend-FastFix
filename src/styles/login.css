@@ -21,10 +21,22 @@ body {
     box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
 }
 
+.login-card__header {
+    margin-bottom: 24px;
+}
+
 .login-card__title {
-    margin: 0 0 24px;
+    margin: 0 0 10px;
     text-align: center;
     color: #16324f;
+}
+
+.login-card__subtitle {
+    margin: 0;
+    text-align: center;
+    color: #475569;
+    font-size: 15px;
+    line-height: 1.5;
 }
 
 .role-selector {
