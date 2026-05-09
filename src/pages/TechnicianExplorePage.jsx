@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom'
 import ClientHomeHeader from '../components/client-home/ClientHomeHeader'
 import TechnicianExploreHeader from '../components/technician-explore/TechnicianExploreHeader'
 import TechnicianFilters from '../components/technician-explore/TechnicianFilters'
@@ -21,6 +21,7 @@ const INITIAL_FILTERS = {
 function TechnicianExplorePage() {
     const location = useLocation()
     const navigate = useNavigate()
+    const [searchParams, setSearchParams] = useSearchParams()
 
     const [storedClient] = useState(() => getClientSession())
 
@@ -34,6 +35,8 @@ function TechnicianExplorePage() {
     const [isRefreshingResults, setIsRefreshingResults] = useState(true)
     const [pageError, setPageError] = useState('')
     const [hasLoadedResultsOnce, setHasLoadedResultsOnce] = useState(false)
+    const [hasInitializedFromQueryParams, setHasInitializedFromQueryParams] =
+        useState(false)
 
     const requestIdRef = useRef(0)
 
@@ -85,6 +88,20 @@ function TechnicianExplorePage() {
         loadFilterData()
     }, [])
 
+    useEffect(() => {
+        if (loadingFilters) return
+        if (hasInitializedFromQueryParams) return
+
+        setFilters({
+            sectorId: searchParams.get('sectorId') || '',
+            province: searchParams.get('province') || '',
+            city: searchParams.get('city') || '',
+            rating: searchParams.get('rating') || '',
+        })
+
+        setHasInitializedFromQueryParams(true)
+    }, [loadingFilters, hasInitializedFromQueryParams, searchParams])
+
     const filteredCities = useMemo(() => {
         if (!filters.province) return []
 
@@ -101,6 +118,7 @@ function TechnicianExplorePage() {
 
     useEffect(() => {
         if (!client) return
+        if (!hasInitializedFromQueryParams) return
 
         const debounceId = setTimeout(() => {
             async function loadTechnicians() {
@@ -159,7 +177,31 @@ function TechnicianExplorePage() {
         }, 250)
 
         return () => clearTimeout(debounceId)
-    }, [client, filters])
+    }, [client, filters, hasInitializedFromQueryParams])
+
+    useEffect(() => {
+        if (!hasInitializedFromQueryParams) return
+
+        const nextSearchParams = new URLSearchParams()
+
+        if (filters.sectorId) {
+            nextSearchParams.set('sectorId', filters.sectorId)
+        }
+
+        if (filters.province) {
+            nextSearchParams.set('province', filters.province)
+        }
+
+        if (filters.city) {
+            nextSearchParams.set('city', filters.city)
+        }
+
+        if (filters.rating) {
+            nextSearchParams.set('rating', filters.rating)
+        }
+
+        setSearchParams(nextSearchParams, { replace: true })
+    }, [filters, hasInitializedFromQueryParams, setSearchParams])
 
     function handleFilterChange(event) {
         const { name, value } = event.target
