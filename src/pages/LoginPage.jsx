@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Toast from '../components/common/Toast'
 import { loginClient } from '../services/clientAuthService'
-import { mapLoginErrorToSpanish } from '../utils/loginErrorMapper'
+import { loginTechnician } from '../services/technicianAuthService'
+import { mapLoginClientErrorToSpanish } from '../utils/loginClientErrorMapper'
+import { mapLoginTechnicianErrorToSpanish } from '../utils/loginTechnicianErrorMapper'
 import '../styles/login.css'
 
 const INITIAL_FORM_DATA = {
@@ -96,6 +98,44 @@ function LoginPage() {
         return fieldErrors[fieldName] ? 'input-error' : ''
     }
 
+    async function handleClientLogin() {
+        const credentials = {
+            email: formData.email.trim(),
+            password: formData.password,
+        }
+
+        const responseData = await loginClient(credentials)
+
+        navigate('/client/home', {
+            replace: true,
+            state: {
+                client: responseData,
+            },
+        })
+    }
+
+    async function handleTechnicianLogin() {
+        const credentials = {
+            email: formData.email.trim(),
+            password: formData.password,
+        }
+
+        const responseData = await loginTechnician(credentials)
+
+        navigate('/technician/home', {
+            replace: true,
+            state: {
+                technician: responseData,
+            },
+        })
+    }
+
+    function mapLoginErrorByRole(errorData, currentRole) {
+        return currentRole === 'client'
+            ? mapLoginClientErrorToSpanish(errorData)
+            : mapLoginTechnicianErrorToSpanish(errorData)
+    }
+
     async function handleSubmit(event) {
         event.preventDefault()
 
@@ -110,41 +150,27 @@ function LoginPage() {
             return
         }
 
-        if (role === 'client') {
-            const credentials = {
-                email: formData.email.trim(),
-                password: formData.password,
+        try {
+            setSubmitting(true)
+
+            if (role === 'client') {
+                await handleClientLogin()
+            } else {
+                await handleTechnicianLogin()
             }
+        } catch (err) {
+            console.error(`Error en login ${role}:`, err)
 
-            try {
-                setSubmitting(true)
-
-                const responseData = await loginClient(credentials)
-
-                navigate('/client/home', {
-                    replace: true,
-                    state: {
-                        client: responseData,
-                    },
-                })
-            } catch (err) {
-                console.error('Error en login cliente:', err)
-
-                if (err.response) {
-                    const translatedMessage = mapLoginErrorToSpanish(err.response.data)
-                    setToastMessage(translatedMessage)
-                } else if (err.request) {
-                    setToastMessage('No se recibió respuesta del servidor')
-                } else {
-                    setToastMessage('Error al preparar la petición')
-                }
-
-
-            } finally {
-                setSubmitting(false)
+            if (err.response) {
+                const translatedMessage = mapLoginErrorByRole(err.response.data, role)
+                setToastMessage(translatedMessage)
+            } else if (err.request) {
+                setToastMessage('No se recibió respuesta del servidor')
+            } else {
+                setToastMessage('Error al preparar la petición')
             }
-        } else {
-            setToastMessage('El login de técnico lo haremos después')
+        } finally {
+            setSubmitting(false)
         }
     }
 
@@ -157,7 +183,12 @@ function LoginPage() {
             />
 
             <div className="login-card">
-                <h1 className="login-card__title">Iniciar sesión</h1>
+                <div className="login-card__header">
+                    <h1 className="login-card__title">Iniciar sesión</h1>
+                    <p className="login-card__subtitle">
+                        Accede a tu cuenta para continuar en FastFix.
+                    </p>
+                </div>
 
                 <div className="role-selector">
                     <button
@@ -193,6 +224,7 @@ function LoginPage() {
                             onChange={handleChange}
                             onBlur={handleBlur}
                             className={getFieldClassName('email')}
+                            autoComplete="email"
                         />
                         {fieldErrors.email && (
                             <span className="field-error-text">{fieldErrors.email}</span>
@@ -212,6 +244,7 @@ function LoginPage() {
                                 value={formData.password}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
+                                autoComplete="current-password"
                             />
                             <button
                                 type="button"
@@ -232,9 +265,7 @@ function LoginPage() {
                         className="login-form__submit"
                         disabled={submitting}
                     >
-                        {submitting
-                            ? 'Accediendo...'
-                            : `Entrar como ${role === 'client' ? 'cliente' : 'técnico'}`}
+                        {submitting ? 'Accediendo...' : 'Entrar'}
                     </button>
 
                     {formError && <p className="login-form__error">{formError}</p>}
