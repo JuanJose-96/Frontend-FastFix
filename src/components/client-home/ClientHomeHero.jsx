@@ -1,4 +1,13 @@
-function ClientHomeHero({ client }) {
+function ClientHomeHero({
+    client,
+    searchFilters,
+    sectors,
+    provinces,
+    cities,
+    loadingSearchBar,
+    onSearchFilterChange,
+    onQuickSearch,
+}) {
     return (
         <section className="client-home-hero">
             <div className="client-home-hero__content">
@@ -9,25 +18,83 @@ function ClientHomeHero({ client }) {
                 </h1>
 
                 <p className="client-home-hero__description">
-                    Busca por sector, provincia, ciudad o valoración. Te mostramos opciones
-                    cercanas y perfiles mejor valorados para que encuentres ayuda rápida.
+                    Usa la búsqueda rápida para encontrar profesionales en tu zona o explora
+                    con más calma desde la pantalla completa de filtros.
                 </p>
 
-                <div className="client-home-hero__search">
-                    <input
-                        type="text"
-                        placeholder="Buscar técnicos, sectores o servicios..."
-                        disabled
-                    />
-                    <button type="button" disabled>
-                        Buscar
-                    </button>
+                <div className="client-home-hero__quick-search">
+                    <div className="client-home-hero__field">
+                        <label htmlFor="hero-sectorId">Sector</label>
+                        <select
+                            id="hero-sectorId"
+                            name="sectorId"
+                            value={searchFilters.sectorId}
+                            onChange={onSearchFilterChange}
+                            disabled={loadingSearchBar}
+                        >
+                            <option value="">Selecciona un sector</option>
+                            {sectors.map((sector) => (
+                                <option key={sector.id} value={String(sector.id)}>
+                                    {sector.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="client-home-hero__field">
+                        <label htmlFor="hero-province">Provincia</label>
+                        <select
+                            id="hero-province"
+                            name="province"
+                            value={searchFilters.province}
+                            onChange={onSearchFilterChange}
+                            disabled={loadingSearchBar}
+                        >
+                            <option value="">Selecciona una provincia</option>
+                            {provinces.map((province) => (
+                                <option key={province.code} value={province.label}>
+                                    {province.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="client-home-hero__field">
+                        <label htmlFor="hero-city">Ciudad</label>
+                        <select
+                            key={searchFilters.province || 'hero-city-empty'}
+                            id="hero-city"
+                            name="city"
+                            value={searchFilters.city}
+                            onChange={onSearchFilterChange}
+                            disabled={loadingSearchBar || !searchFilters.province}
+                        >
+                            <option value="">
+                                {!searchFilters.province
+                                    ? 'Selecciona primero una provincia'
+                                    : 'Selecciona una ciudad'}
+                            </option>
+
+                            {cities.map((city) => (
+                                <option key={`${city.parent_code}-${city.code}`} value={city.label}>
+                                    {city.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="client-home-hero__search-action">
+                        <button
+                            type="button"
+                            className="client-home-hero__search-button"
+                            onClick={onQuickSearch}
+                            disabled={loadingSearchBar}
+                        >
+                            Buscar
+                        </button>
+                    </div>
                 </div>
 
-                <div className="client-home-hero__meta">
-                    <span>Provincia: {client?.province || 'No disponible'}</span>
-                    <span>Ciudad: {client?.city || 'No disponible'}</span>
-                </div>
             </div>
         </section>
     )

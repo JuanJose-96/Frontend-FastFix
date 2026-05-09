@@ -68,10 +68,47 @@ body {
     gap: 16px;
 }
 
+.client-home-header__user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
 .client-home-header__welcome {
     color: #475569;
     font-size: 14px;
     font-weight: 700;
+    white-space: nowrap;
+}
+
+.client-home-header__avatar {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #dbe7f3;
+    color: #16324f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #111827;
+}
+
+.client-home-header__avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.client-home-header__avatar-initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    color: #16324f;
 }
 
 .client-home-header__logout {
@@ -117,30 +154,50 @@ body {
     line-height: 1.6;
 }
 
-.client-home-hero__search {
-    display: flex;
-    gap: 12px;
+.client-home-hero__quick-search {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr auto;
+    gap: 14px;
+    align-items: end;
     margin-bottom: 18px;
 }
 
-.client-home-hero__search input {
-    flex: 1;
+.client-home-hero__field {
+    display: flex;
+    flex-direction: column;
+}
+
+.client-home-hero__field label {
+    margin-bottom: 8px;
+    color: #16324f;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.client-home-hero__field select {
+    width: 100%;
     border: 1px solid #cbd5e1;
     border-radius: 14px;
     padding: 14px 16px;
     font-size: 15px;
     background: white;
+    font-family: inherit;
 }
 
-.client-home-hero__search button {
+.client-home-hero__search-action {
+    display: flex;
+    align-items: end;
+}
+
+.client-home-hero__search-button {
     border: none;
     border-radius: 14px;
-    padding: 14px 18px;
+    padding: 14px 20px;
     background: #16324f;
     color: white;
     font-weight: 700;
-    cursor: not-allowed;
-    opacity: 0.75;
+    cursor: pointer;
+    min-height: 50px;
 }
 
 .client-home-hero__meta {
@@ -350,6 +407,7 @@ body {
     .client-home-header__actions {
         width: 100%;
         justify-content: space-between;
+        flex-wrap: wrap;
     }
 
     .technician-section__header {
@@ -376,8 +434,8 @@ body {
         font-size: 30px;
     }
 
-    .client-home-hero__search {
-        flex-direction: column;
+    .client-home-hero__quick-search {
+        grid-template-columns: 1fr;
     }
 
     .technician-section__list {
