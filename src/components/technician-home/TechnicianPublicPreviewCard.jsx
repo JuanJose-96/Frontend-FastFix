@@ -1,8 +1,9 @@
-function TechnicianPublicPreviewCard({ technician }) {
+function TechnicianPublicPreviewCard({ technician, onOpenPublicProfile }) {
     const fullName = `${technician.name || ''} ${technician.surname || ''}`.trim()
     const sectorName =
-        technician.sector?.name || technician.sectorName || technician.sector || 'Sector no definido'
+        technician.sectorName || technician.sector?.name || 'Sector no definido'
     const averageRating = Number(technician.averageRating || 0)
+    const totalReviews = Number(technician.totalReviews || 0)
 
     function getInitials() {
         const firstInitial = technician.name?.trim()?.charAt(0)?.toUpperCase() || ''
@@ -16,9 +17,25 @@ function TechnicianPublicPreviewCard({ technician }) {
     }
 
     return (
-        <section className="technician-panel-card">
+        <section
+            className="technician-panel-card technician-public-preview-card"
+            onClick={onOpenPublicProfile}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    onOpenPublicProfile()
+                }
+            }}
+        >
             <div className="technician-panel-card__header">
-                <h2 className="technician-panel-card__title">Así te ven los clientes</h2>
+                <div>
+                    <h2 className="technician-panel-card__title">Así te ven los clientes</h2>
+                    <p className="technician-public-preview-card__subtitle">
+                        Pulsa para abrir tu perfil público completo
+                    </p>
+                </div>
             </div>
 
             <article className="technician-public-preview">
@@ -57,6 +74,26 @@ function TechnicianPublicPreviewCard({ technician }) {
                         {technician.whatsappAvailable && (
                             <span className="technician-public-preview__badge">WhatsApp</span>
                         )}
+                    </div>
+
+                    <div className="technician-public-preview__stats">
+                        <div className="technician-public-preview__stat">
+                            <span className="technician-public-preview__stat-value">
+                                {totalReviews}
+                            </span>
+                            <span className="technician-public-preview__stat-label">
+                                Clientes que te han valorado
+                            </span>
+                        </div>
+
+                        <div className="technician-public-preview__stat">
+                            <span className="technician-public-preview__stat-value">
+                                {totalReviews}
+                            </span>
+                            <span className="technician-public-preview__stat-label">
+                                Reseñas registradas
+                            </span>
+                        </div>
                     </div>
                 </div>
             </article>

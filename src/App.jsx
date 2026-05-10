@@ -6,6 +6,8 @@ import ClientHomePage from './pages/ClientHomePage'
 import TechnicianHomePage from './pages/TechnicianHomePage'
 import TechnicianExplorePage from './pages/TechnicianExplorePage'
 import ClientProfilePage from './pages/ClientProfilePage'
+import TechnicianProfilePage from './pages/TechnicianProfilePage'
+import TechnicianPublicProfilePage from './pages/TechnicianPublicProfilePage'
 
 function App() {
   return (
@@ -17,6 +19,11 @@ function App() {
       <Route path="/client/explore" element={<TechnicianExplorePage />} />
       <Route path="/client/profile" element={<ClientProfilePage />} />
       <Route path="/technician/home" element={<TechnicianHomePage />} />
+      <Route path="/technician/profile" element={<TechnicianProfilePage />} />
+      <Route
+        path="/technician/public-profile"
+        element={<TechnicianPublicProfilePage />}
+      />
     </Routes>
   )
 }
