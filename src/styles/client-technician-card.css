@@ -1,0 +1,179 @@
+.client-technician-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+    min-height: 320px;
+    box-sizing: border-box;
+}
+
+.client-technician-card__avatar {
+    width: 88px;
+    height: 88px;
+    min-width: 88px;
+    min-height: 88px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #dbe7f3;
+    border: 1.5px solid #111827;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.client-technician-card__avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.client-technician-card__avatar-initials {
+    font-size: 28px;
+    font-weight: 800;
+    color: #16324f;
+}
+
+.client-technician-card__body {
+    text-align: center;
+    flex: 1;
+    width: 100%;
+}
+
+.client-technician-card__name {
+    margin: 0 0 8px;
+    color: #16324f;
+    font-size: 18px;
+    line-height: 1.35;
+}
+
+.client-technician-card__sector {
+    margin: 0 0 8px;
+    color: #334155;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.client-technician-card__location {
+    margin: 0 0 12px;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.client-technician-card__badges {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
+.client-technician-card__rating,
+.client-technician-card__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.client-technician-card__rating {
+    background: #fff7ed;
+    color: #b45309;
+    border: 1px solid #fed7aa;
+}
+
+.client-technician-card__badge {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.client-technician-card__review-meta {
+    padding: 12px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid #dbe4ee;
+    text-align: left;
+}
+
+.client-technician-card__review-label {
+    display: block;
+    margin-bottom: 6px;
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.client-technician-card__review-value {
+    display: block;
+    margin-bottom: 8px;
+    color: #d97706;
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.client-technician-card__review-comment {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.client-technician-card__footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.client-technician-card__whatsapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.client-technician-card__whatsapp:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.client-technician-card__whatsapp--available {
+    background: #25d366;
+    color: white;
+}
+
+.client-technician-card__whatsapp--unavailable {
+    background: #dc2626;
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.9;
+}
+
+.client-technician-card__whatsapp-image {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    display: block;
+}
+
+.client-technician-card__whatsapp-text {
+    display: inline-flex;
+    align-items: center;
+}
