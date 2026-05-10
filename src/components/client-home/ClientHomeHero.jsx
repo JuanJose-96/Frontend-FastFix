@@ -52,7 +52,7 @@ function ClientHomeHero({
                         >
                             <option value="">Selecciona una provincia</option>
                             {provinces.map((province) => (
-                                <option key={province.code} value={province.label}>
+                                <option key={`${province.code}-${province.label}`} value={province.label}>
                                     {province.label}
                                 </option>
                             ))}
@@ -75,8 +75,11 @@ function ClientHomeHero({
                                     : 'Selecciona una ciudad'}
                             </option>
 
-                            {cities.map((city) => (
-                                <option key={`${city.parent_code}-${city.code}`} value={city.label}>
+                            {cities.map((city, index) => (
+                                <option
+                                    key={`${city.parent_code}-${city.code}-${city.label}-${index}`}
+                                    value={city.label}
+                                >
                                     {city.label}
                                 </option>
                             ))}
@@ -94,7 +97,6 @@ function ClientHomeHero({
                         </button>
                     </div>
                 </div>
-
             </div>
         </section>
     )
