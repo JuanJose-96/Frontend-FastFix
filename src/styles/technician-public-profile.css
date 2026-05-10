@@ -11,112 +11,9 @@
     padding: 24px 24px 56px;
 }
 
-/* HEADER */
-.technician-public-profile-page .technician-home-header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background-color: rgba(255, 255, 255, 0.96);
-    border-bottom: 1px solid #e5e7eb;
-    backdrop-filter: blur(8px);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 24px;
-    padding: 18px 24px;
-}
-
-.technician-public-profile-page .technician-home-header__brand {
-    font-size: 30px;
-    font-weight: 800;
-    color: #16324f;
-}
-
-.technician-public-profile-page .technician-home-header__nav {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
-
-.technician-public-profile-page .technician-home-header__link {
-    border: none;
-    background: none;
-    color: #334155;
-    font-size: 15px;
-    cursor: pointer;
-    text-decoration: none;
-    padding: 0;
-}
-
-.technician-public-profile-page .technician-home-header__link:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.technician-public-profile-page .technician-home-header__actions {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.technician-public-profile-page .technician-home-header__user {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.technician-public-profile-page .technician-home-header__welcome {
-    color: #475569;
-    font-size: 14px;
-    font-weight: 700;
-    white-space: nowrap;
-}
-
-.technician-public-profile-page .technician-home-header__avatar {
-    width: 42px;
-    height: 42px;
-    min-width: 42px;
-    min-height: 42px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: #dbe7f3;
-    color: #16324f;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1.5px solid #111827;
-    flex-shrink: 0;
-}
-
-.technician-public-profile-page .technician-home-header__avatar-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-.technician-public-profile-page .technician-home-header__avatar-initials {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 15px;
-    color: #16324f;
-}
-
-.technician-public-profile-page .technician-home-header__logout {
-    border: 1px solid #cbd5e1;
-    background: white;
-    color: #16324f;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-weight: 700;
-    cursor: pointer;
-}
-
 /* PUBLIC PROFILE */
-.technician-public-profile-page .technician-public-profile-card,
-.technician-public-profile-page .technician-public-reviews-card {
+.technician-public-profile-card,
+.technician-public-reviews-card {
     background: white;
     border: 1px solid #e2e8f0;
     border-radius: 24px;
@@ -124,18 +21,18 @@
     box-sizing: border-box;
 }
 
-.technician-public-profile-page .technician-public-profile-card {
+.technician-public-profile-card {
     margin-bottom: 24px;
 }
 
-.technician-public-profile-page .technician-public-profile-card__top {
+.technician-public-profile-card__top {
     display: flex;
     align-items: flex-start;
     gap: 24px;
     margin-bottom: 24px;
 }
 
-.technician-public-profile-page .technician-public-profile-card__avatar {
+.technician-public-profile-card__avatar {
     width: 132px;
     height: 132px;
     min-width: 132px;
@@ -150,20 +47,20 @@
     flex-shrink: 0;
 }
 
-.technician-public-profile-page .technician-public-profile-card__avatar-image {
+.technician-public-profile-card__avatar-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
 }
 
-.technician-public-profile-page .technician-public-profile-card__avatar-initials {
+.technician-public-profile-card__avatar-initials {
     font-size: 42px;
     font-weight: 800;
     color: #16324f;
 }
 
-.technician-public-profile-page .technician-public-profile-card__eyebrow {
+.technician-public-profile-card__eyebrow {
     margin: 0 0 8px;
     color: #64748b;
     font-size: 13px;
@@ -172,30 +69,30 @@
     letter-spacing: 0.5px;
 }
 
-.technician-public-profile-page .technician-public-profile-card__name {
+.technician-public-profile-card__name {
     margin: 0 0 10px;
     color: #16324f;
     font-size: 34px;
     line-height: 1.15;
 }
 
-.technician-public-profile-page .technician-public-profile-card__sector,
-.technician-public-profile-page .technician-public-profile-card__location {
+.technician-public-profile-card__sector,
+.technician-public-profile-card__location {
     margin: 0 0 8px;
     color: #475569;
     font-size: 16px;
 }
 
-.technician-public-profile-page .technician-public-profile-card__badges {
+.technician-public-profile-card__badges {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
     margin-top: 16px;
 }
 
-.technician-public-profile-page .technician-public-profile-card__rating,
-.technician-public-profile-page .technician-public-profile-card__reviews,
-.technician-public-profile-page .technician-public-profile-card__badge {
+.technician-public-profile-card__rating,
+.technician-public-profile-card__reviews,
+.technician-public-profile-card__badge {
     display: inline-flex;
     align-items: center;
     padding: 9px 13px;
@@ -204,79 +101,89 @@
     font-weight: 700;
 }
 
-.technician-public-profile-page .technician-public-profile-card__rating {
+.technician-public-profile-card__rating {
     background: #fff7ed;
     color: #b45309;
     border: 1px solid #fed7aa;
 }
 
-.technician-public-profile-page .technician-public-profile-card__reviews {
+.technician-public-profile-card__reviews {
     background: #f8fafc;
     color: #334155;
     border: 1px solid #dbe4ee;
 }
 
-.technician-public-profile-page .technician-public-profile-card__badge {
+.technician-public-profile-card__badge {
     background: #eff6ff;
     color: #1d4ed8;
     border: 1px solid #bfdbfe;
 }
 
-.technician-public-profile-page .technician-public-profile-card__whatsapp {
+.technician-public-profile-card__whatsapp {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 46px;
-    height: 46px;
-    padding: 0;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 14px;
     border-radius: 999px;
     border: none;
+    font-size: 13px;
+    font-weight: 700;
     overflow: hidden;
 }
 
-.technician-public-profile-page .technician-public-profile-card__whatsapp--available {
+.technician-public-profile-card__whatsapp--available {
     background: #25d366;
+    color: white;
     cursor: default;
     opacity: 1;
 }
 
-.technician-public-profile-page .technician-public-profile-card__whatsapp--unavailable {
+.technician-public-profile-card__whatsapp--unavailable {
     background: #dc2626;
+    color: white;
     cursor: not-allowed;
     opacity: 0.9;
 }
 
-.technician-public-profile-page .technician-public-profile-card__whatsapp:disabled {
+.technician-public-profile-card__whatsapp:disabled {
     pointer-events: none;
 }
 
-.technician-public-profile-page .technician-public-profile-card__whatsapp-image {
-    width: 24px;
-    height: 24px;
+.technician-public-profile-card__whatsapp-image {
+    width: 18px;
+    height: 18px;
     object-fit: contain;
     display: block;
 }
 
-.technician-public-profile-page .technician-public-profile-card__sections {
+.technician-public-profile-card__whatsapp-text {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* sections */
+.technician-public-profile-card__sections {
     display: grid;
     grid-template-columns: 1fr;
     gap: 18px;
 }
 
-.technician-public-profile-page .technician-public-profile-card__section {
+.technician-public-profile-card__section {
     padding: 18px;
     border-radius: 18px;
     background: #f8fafc;
     border: 1px solid #dbe4ee;
 }
 
-.technician-public-profile-page .technician-public-profile-card__section h2 {
+.technician-public-profile-card__section h2 {
     margin: 0 0 10px;
     color: #16324f;
     font-size: 20px;
 }
 
-.technician-public-profile-page .technician-public-profile-card__section p {
+.technician-public-profile-card__section p {
     margin: 0;
     color: #475569;
     font-size: 15px;
@@ -284,55 +191,55 @@
 }
 
 /* REVIEWS */
-.technician-public-profile-page .technician-public-reviews-card__header {
+.technician-public-reviews-card__header {
     margin-bottom: 20px;
 }
 
-.technician-public-profile-page .technician-public-reviews-card__header h2 {
+.technician-public-reviews-card__header h2 {
     margin: 0 0 8px;
     color: #16324f;
     font-size: 28px;
 }
 
-.technician-public-profile-page .technician-public-reviews-card__header p {
+.technician-public-reviews-card__header p {
     margin: 0;
     color: #475569;
     font-size: 15px;
     line-height: 1.6;
 }
 
-.technician-public-profile-page .technician-public-reviews-card__summary {
+.technician-public-reviews-card__summary {
     display: flex;
     align-items: center;
     gap: 16px;
     margin-bottom: 20px;
 }
 
-.technician-public-profile-page .technician-public-reviews-card__summary-score {
+.technician-public-reviews-card__summary-score {
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
-.technician-public-profile-page .technician-public-reviews-card__rating-number {
+.technician-public-reviews-card__rating-number {
     font-size: 52px;
     line-height: 1;
     font-weight: 800;
     color: #16324f;
 }
 
-.technician-public-profile-page .technician-public-reviews-card__rating-star {
+.technician-public-reviews-card__rating-star {
     font-size: 28px;
     color: #d97706;
 }
 
-.technician-public-profile-page .technician-public-reviews-card__summary-text {
+.technician-public-reviews-card__summary-text {
     color: #475569;
     font-size: 15px;
     font-weight: 700;
 }
 
-.technician-public-profile-page .technician-public-reviews-card__empty {
+.technician-public-reviews-card__empty {
     padding: 20px;
     border-radius: 18px;
     background: #f8fafc;
@@ -343,34 +250,21 @@
 }
 
 /* RESPONSIVE */
-@media (max-width: 992px) {
-    .technician-public-profile-page .technician-home-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .technician-public-profile-page .technician-home-header__actions {
-        width: 100%;
-        justify-content: space-between;
-        flex-wrap: wrap;
-    }
-}
-
 @media (max-width: 768px) {
     .technician-public-profile-page__main {
         padding: 20px 16px 40px;
     }
 
-    .technician-public-profile-page .technician-public-profile-card__top {
+    .technician-public-profile-card__top {
         flex-direction: column;
         align-items: flex-start;
     }
 
-    .technician-public-profile-page .technician-public-profile-card__name {
+    .technician-public-profile-card__name {
         font-size: 28px;
     }
 
-    .technician-public-profile-page .technician-public-reviews-card__summary {
+    .technician-public-reviews-card__summary {
         flex-direction: column;
         align-items: flex-start;
     }

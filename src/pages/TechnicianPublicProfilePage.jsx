@@ -128,6 +128,9 @@ function TechnicianPublicProfilePage() {
                                         alt="WhatsApp"
                                         className="technician-public-profile-card__whatsapp-image"
                                     />
+                                    <span className="technician-public-profile-card__whatsapp-text">
+                                        {technician.whatsappAvailable ? 'Disponible' : 'No disponible'}
+                                    </span>
                                 </button>
                             </div>
                         </div>

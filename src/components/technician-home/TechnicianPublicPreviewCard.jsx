@@ -71,9 +71,32 @@ function TechnicianPublicPreviewCard({ technician, onOpenPublicProfile }) {
                             <span className="technician-public-preview__badge">Urgencias</span>
                         )}
 
-                        {technician.whatsappAvailable && (
-                            <span className="technician-public-preview__badge">WhatsApp</span>
-                        )}
+                        <button
+                            type="button"
+                            className={`technician-public-preview__whatsapp ${technician.whatsappAvailable
+                                    ? 'technician-public-preview__whatsapp--available'
+                                    : 'technician-public-preview__whatsapp--unavailable'
+                                }`}
+                            disabled
+                            title="Vista previa de cómo verán los clientes tu botón de WhatsApp"
+                            aria-label={
+                                technician.whatsappAvailable
+                                    ? 'WhatsApp disponible'
+                                    : 'WhatsApp no disponible'
+                            }
+                            onClick={(event) => {
+                                event.stopPropagation()
+                            }}
+                        >
+                            <img
+                                src="/images/whatsapp-icon.png"
+                                alt="WhatsApp"
+                                className="technician-public-preview__whatsapp-image"
+                            />
+                            <span className="technician-public-preview__whatsapp-text">
+                                {technician.whatsappAvailable ? 'Disponible' : 'No disponible'}
+                            </span>
+                        </button>
                     </div>
 
                     <div className="technician-public-preview__stats">
