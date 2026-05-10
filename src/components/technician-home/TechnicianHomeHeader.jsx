@@ -18,9 +18,9 @@ function TechnicianHomeHeader({
         navigate('/technician/clients')
     }
 
-    function handleGoReviews() {
-        if (location.pathname === '/technician/reviews') return
-        navigate('/technician/reviews')
+    function handleGoJobs() {
+        if (location.pathname === '/technician/jobs') return
+        navigate('/technician/jobs')
     }
 
     function handleGoProfile() {
@@ -69,17 +69,16 @@ function TechnicianHomeHeader({
                 <button
                     type="button"
                     className="technician-home-header__link"
-                    onClick={handleGoReviews}
+                    onClick={handleGoJobs}
                     disabled
                 >
-                    Reseñas
+                    Mis trabajos
                 </button>
 
                 <button
                     type="button"
                     className="technician-home-header__link"
                     onClick={handleGoProfile}
-                    disabled
                 >
                     Perfil
                 </button>

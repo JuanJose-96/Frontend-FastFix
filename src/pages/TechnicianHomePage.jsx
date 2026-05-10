@@ -4,7 +4,6 @@ import TechnicianHomeHeader from '../components/technician-home/TechnicianHomeHe
 import TechnicianWelcomeCard from '../components/technician-home/TechnicianWelcomeCard'
 import TechnicianProfileStatusCard from '../components/technician-home/TechnicianProfileStatusCard'
 import TechnicianReputationCard from '../components/technician-home/TechnicianReputationCard'
-import TechnicianQuickActions from '../components/technician-home/TechnicianQuickActions'
 import TechnicianPublicPreviewCard from '../components/technician-home/TechnicianPublicPreviewCard'
 import '../styles/technician-home.css'
 
@@ -43,6 +42,14 @@ function TechnicianHomePage() {
         }
     }, [technician, navigate])
 
+    function handleOpenPublicProfile() {
+        navigate('/technician/public-profile', {
+            state: {
+                technician,
+            },
+        })
+    }
+
     if (!technician) {
         return null
     }
@@ -63,10 +70,12 @@ function TechnicianHomePage() {
 
                 <div className="technician-home-page__content-grid">
                     <TechnicianProfileStatusCard technician={technician} />
-                    <TechnicianQuickActions />
-                </div>
 
-                <TechnicianPublicPreviewCard technician={technician} />
+                    <TechnicianPublicPreviewCard
+                        technician={technician}
+                        onOpenPublicProfile={handleOpenPublicProfile}
+                    />
+                </div>
             </main>
         </div>
     )
