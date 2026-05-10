@@ -61,7 +61,6 @@ function TechnicianHomeHeader({
                     type="button"
                     className="technician-home-header__link"
                     onClick={handleGoSearchClients}
-                    disabled
                 >
                     Buscar clientes
                 </button>

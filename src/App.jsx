@@ -8,6 +8,7 @@ import TechnicianExplorePage from './pages/TechnicianExplorePage'
 import ClientProfilePage from './pages/ClientProfilePage'
 import TechnicianProfilePage from './pages/TechnicianProfilePage'
 import TechnicianPublicProfilePage from './pages/TechnicianPublicProfilePage'
+import TechnicianClientSearchPage from './pages/TechnicianClientSearchPage'
 
 function App() {
   return (
@@ -23,6 +24,10 @@ function App() {
       <Route
         path="/technician/public-profile"
         element={<TechnicianPublicProfilePage />}
+      />
+      <Route
+        path="/technician/clients"
+        element={<TechnicianClientSearchPage />}
       />
     </Routes>
   )
