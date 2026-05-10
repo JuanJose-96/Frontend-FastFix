@@ -19,6 +19,6 @@ export async function searchTechnicians(filters = {}) {
         params.rating = filters.rating
     }
 
-    const response = await axiosClient.get('/api/technicians/search', { params })
+    const response = await axiosClient.get('/technicians/search', { params })
     return Array.isArray(response.data) ? response.data : []
 }
