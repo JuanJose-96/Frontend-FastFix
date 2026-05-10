@@ -1,6 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import TechnicianHomeHeader from '../components/technician-home/TechnicianHomeHeader'
+import TechnicianReviewsSummary from '../components/technician-reviews/TechnicianReviewsSummary'
+import TechnicianReviewsList from '../components/technician-reviews/TechnicianReviewsList'
+import TechnicianReviewsEmptyState from '../components/technician-reviews/TechnicianReviewsEmptyState'
+import {
+    deleteReviewReply,
+    getTechnicianReviews,
+    replyToReview,
+} from '../services/reviewService'
+import { resolveReviewClients } from '../services/reviewClientResolverService'
 import '../styles/technician-public-profile.css'
 
 function TechnicianPublicProfilePage() {
@@ -26,11 +35,50 @@ function TechnicianPublicProfilePage() {
         return technicianFromState || storedTechnician
     }, [technicianFromState, storedTechnician])
 
+    const [reviews, setReviews] = useState([])
+    const [clientMap, setClientMap] = useState({})
+    const [loadingReviews, setLoadingReviews] = useState(true)
+    const [reviewsError, setReviewsError] = useState('')
+    const [submittingReviewId, setSubmittingReviewId] = useState(null)
+    const [deletingReplyId, setDeletingReplyId] = useState(null)
+
     useEffect(() => {
         if (!technician) {
             navigate('/technician/home', { replace: true })
         }
     }, [technician, navigate])
+
+    async function loadReviewsAndClients() {
+        if (!technician?.id) return
+
+        try {
+            setLoadingReviews(true)
+            setReviewsError('')
+
+            const reviewResponses = await getTechnicianReviews(technician.id)
+            const sortedReviews = [...reviewResponses].sort((a, b) => {
+                const firstDate = a.createdAt || ''
+                const secondDate = b.createdAt || ''
+                return secondDate.localeCompare(firstDate)
+            })
+
+            const resolvedClientMap = await resolveReviewClients(sortedReviews)
+
+            setReviews(sortedReviews)
+            setClientMap(resolvedClientMap)
+        } catch (error) {
+            console.error('Error cargando reseñas del técnico:', error)
+            setReviewsError('No se pudieron cargar las reseñas')
+            setReviews([])
+            setClientMap({})
+        } finally {
+            setLoadingReviews(false)
+        }
+    }
+
+    useEffect(() => {
+        loadReviewsAndClients()
+    }, [technician?.id])
 
     function getInitials() {
         const firstInitial = technician?.name?.trim()?.charAt(0)?.toUpperCase() || ''
@@ -41,6 +89,32 @@ function TechnicianPublicProfilePage() {
         }
 
         return firstInitial || 'T'
+    }
+
+    async function handleReplySubmit(reviewId, technicianId, replyText) {
+        try {
+            setSubmittingReviewId(reviewId)
+            await replyToReview(reviewId, technicianId, replyText)
+            await loadReviewsAndClients()
+        } catch (error) {
+            console.error('Error respondiendo reseña:', error)
+            setReviewsError('No se pudo guardar la respuesta')
+        } finally {
+            setSubmittingReviewId(null)
+        }
+    }
+
+    async function handleDeleteReply(reviewId, technicianId) {
+        try {
+            setDeletingReplyId(reviewId)
+            await deleteReviewReply(reviewId, technicianId)
+            await loadReviewsAndClients()
+        } catch (error) {
+            console.error('Error eliminando respuesta:', error)
+            setReviewsError('No se pudo eliminar la respuesta')
+        } finally {
+            setDeletingReplyId(null)
+        }
     }
 
     if (!technician) {
@@ -170,28 +244,36 @@ function TechnicianPublicProfilePage() {
                     <div className="technician-public-reviews-card__header">
                         <h2>Reseñas</h2>
                         <p>
-                            Aquí irá el listado detallado de reseñas cuando conectemos esa parte del
-                            backend.
+                            Aquí puedes ver la valoración global, el detalle de cada reseña y
+                            responder como profesional cuando el cliente haya dejado comentario.
                         </p>
                     </div>
 
-                    <div className="technician-public-reviews-card__summary">
-                        <div className="technician-public-reviews-card__summary-score">
-                            <span className="technician-public-reviews-card__rating-number">
-                                {averageRating.toFixed(1)}
-                            </span>
-                            <span className="technician-public-reviews-card__rating-star">★</span>
+                    {reviewsError && (
+                        <p className="technician-public-reviews-card__error">{reviewsError}</p>
+                    )}
+
+                    {loadingReviews ? (
+                        <div className="technician-public-reviews-card__loading">
+                            Cargando reseñas...
                         </div>
+                    ) : reviews.length === 0 ? (
+                        <TechnicianReviewsEmptyState />
+                    ) : (
+                        <>
+                            <TechnicianReviewsSummary reviews={reviews} />
 
-                        <span className="technician-public-reviews-card__summary-text">
-                            Basado en {totalReviews} reseña{totalReviews === 1 ? '' : 's'}
-                        </span>
-                    </div>
-
-                    <div className="technician-public-reviews-card__empty">
-                        Las reseñas detalladas se mostrarán aquí en formato de listado cuando
-                        implementemos esa parte completa.
-                    </div>
+                            <TechnicianReviewsList
+                                reviews={reviews}
+                                clientMap={clientMap}
+                                technicianId={technician.id}
+                                submittingReviewId={submittingReviewId}
+                                deletingReplyId={deletingReplyId}
+                                onReplySubmit={handleReplySubmit}
+                                onDeleteReply={handleDeleteReply}
+                            />
+                        </>
+                    )}
                 </section>
             </main>
         </div>
