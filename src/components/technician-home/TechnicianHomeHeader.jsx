@@ -1,4 +1,28 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import '../../styles/technician-header.css'
+
+const NAV_ITEMS = [
+    {
+        key: 'home',
+        label: 'Inicio',
+        path: '/technician/home',
+    },
+    {
+        key: 'clients',
+        label: 'Buscar clientes',
+        path: '/technician/clients',
+    },
+    {
+        key: 'jobs',
+        label: 'Mis trabajos',
+        path: '/technician/jobs',
+    },
+    {
+        key: 'profile',
+        label: 'Perfil',
+        path: '/technician/profile',
+    },
+]
 
 function TechnicianHomeHeader({
     technicianName,
@@ -8,34 +32,24 @@ function TechnicianHomeHeader({
     const navigate = useNavigate()
     const location = useLocation()
 
-    function handleGoHome() {
-        if (location.pathname === '/technician/home') return
-        navigate('/technician/home')
-    }
-
-    function handleGoSearchClients() {
-        if (location.pathname === '/technician/clients') return
-        navigate('/technician/clients')
-    }
-
-    function handleGoJobs() {
-        if (location.pathname === '/technician/jobs') return
-        navigate('/technician/jobs')
-    }
-
-    function handleGoProfile() {
-        if (location.pathname === '/technician/profile') return
-        navigate('/technician/profile')
-    }
-
     function handleLogout() {
         localStorage.removeItem('technicianSession')
         navigate('/', { replace: true })
     }
 
+    function handleNavigate(path) {
+        if (location.pathname === path) return
+        navigate(path)
+    }
+
+    function isActivePath(path) {
+        return location.pathname === path
+    }
+
     function getInitials() {
         const firstInitial = technicianName?.trim()?.charAt(0)?.toUpperCase() || ''
-        const secondInitial = technicianSurname?.trim()?.charAt(0)?.toUpperCase() || ''
+        const secondInitial =
+            technicianSurname?.trim()?.charAt(0)?.toUpperCase() || ''
 
         if (firstInitial && secondInitial) {
             return `${firstInitial}${secondInitial}`
@@ -48,39 +62,25 @@ function TechnicianHomeHeader({
         <header className="technician-home-header">
             <div className="technician-home-header__brand">FastFix</div>
 
-            <nav className="technician-home-header__nav">
-                <button
-                    type="button"
-                    className="technician-home-header__link"
-                    onClick={handleGoHome}
-                >
-                    Inicio
-                </button>
+            <nav className="technician-home-header__nav" aria-label="Navegación técnico">
+                {NAV_ITEMS.map((item) => {
+                    const isActive = isActivePath(item.path)
 
-                <button
-                    type="button"
-                    className="technician-home-header__link"
-                    onClick={handleGoSearchClients}
-                >
-                    Buscar clientes
-                </button>
-
-                <button
-                    type="button"
-                    className="technician-home-header__link"
-                    onClick={handleGoJobs}
-                    disabled
-                >
-                    Mis trabajos
-                </button>
-
-                <button
-                    type="button"
-                    className="technician-home-header__link"
-                    onClick={handleGoProfile}
-                >
-                    Perfil
-                </button>
+                    return (
+                        <button
+                            key={item.key}
+                            type="button"
+                            className={`technician-home-header__nav-item ${isActive ? 'technician-home-header__nav-item--active' : ''
+                                }`}
+                            onClick={() => handleNavigate(item.path)}
+                            aria-current={isActive ? 'page' : undefined}
+                        >
+                            <span className="technician-home-header__nav-label">
+                                {item.label}
+                            </span>
+                        </button>
+                    )
+                })}
             </nav>
 
             <div className="technician-home-header__actions">

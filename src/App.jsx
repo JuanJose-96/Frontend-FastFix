@@ -9,6 +9,7 @@ import ClientProfilePage from './pages/ClientProfilePage'
 import TechnicianProfilePage from './pages/TechnicianProfilePage'
 import TechnicianPublicProfilePage from './pages/TechnicianPublicProfilePage'
 import TechnicianClientSearchPage from './pages/TechnicianClientSearchPage'
+import TechnicianJobsPage from './pages/TechnicianJobsPage'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
         path="/technician/clients"
         element={<TechnicianClientSearchPage />}
       />
+      <Route path="/technician/jobs" element={<TechnicianJobsPage />} />
     </Routes>
   )
 }
