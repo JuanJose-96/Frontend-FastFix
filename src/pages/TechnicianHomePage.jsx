@@ -5,6 +5,7 @@ import TechnicianWelcomeCard from '../components/technician-home/TechnicianWelco
 import TechnicianProfileStatusCard from '../components/technician-home/TechnicianProfileStatusCard'
 import TechnicianReputationCard from '../components/technician-home/TechnicianReputationCard'
 import TechnicianPublicPreviewCard from '../components/technician-home/TechnicianPublicPreviewCard'
+import { getTechnicianProfile } from '../services/technicianProfileService'
 import '../styles/technician-home.css'
 
 function TechnicianHomePage() {
@@ -26,9 +27,11 @@ function TechnicianHomePage() {
 
     const technicianFromState = location.state?.technician
 
-    const technician = useMemo(() => {
+    const technicianSession = useMemo(() => {
         return technicianFromState || storedTechnician
     }, [technicianFromState, storedTechnician])
+
+    const [technician, setTechnician] = useState(technicianSession)
 
     useEffect(() => {
         if (technicianFromState) {
@@ -37,10 +40,27 @@ function TechnicianHomePage() {
     }, [technicianFromState])
 
     useEffect(() => {
-        if (!technician) {
+        if (!technicianSession) {
             navigate('/login', { replace: true })
         }
-    }, [technician, navigate])
+    }, [technicianSession, navigate])
+
+    useEffect(() => {
+        if (!technicianSession?.id) return
+
+        async function loadFreshTechnicianProfile() {
+            try {
+                const freshTechnician = await getTechnicianProfile(technicianSession.id)
+                setTechnician(freshTechnician)
+                localStorage.setItem('technicianSession', JSON.stringify(freshTechnician))
+            } catch (error) {
+                console.error('Error cargando perfil actualizado del técnico en home:', error)
+                setTechnician(technicianSession)
+            }
+        }
+
+        loadFreshTechnicianProfile()
+    }, [technicianSession])
 
     function handleOpenPublicProfile() {
         navigate('/technician/public-profile', {
@@ -50,7 +70,7 @@ function TechnicianHomePage() {
         })
     }
 
-    if (!technician) {
+    if (!technicianSession || !technician) {
         return null
     }
 
