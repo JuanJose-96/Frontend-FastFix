@@ -10,6 +10,7 @@ import {
     replyToReview,
 } from '../services/reviewService'
 import { resolveReviewClients } from '../services/reviewClientResolverService'
+import { getTechnicianProfile } from '../services/technicianProfileService'
 import '../styles/technician-public-profile.css'
 
 function TechnicianPublicProfilePage() {
@@ -31,10 +32,11 @@ function TechnicianPublicProfilePage() {
 
     const technicianFromState = location.state?.technician
 
-    const technician = useMemo(() => {
+    const technicianSession = useMemo(() => {
         return technicianFromState || storedTechnician
     }, [technicianFromState, storedTechnician])
 
+    const [technician, setTechnician] = useState(technicianSession)
     const [reviews, setReviews] = useState([])
     const [clientMap, setClientMap] = useState({})
     const [loadingReviews, setLoadingReviews] = useState(true)
@@ -43,19 +45,29 @@ function TechnicianPublicProfilePage() {
     const [deletingReplyId, setDeletingReplyId] = useState(null)
 
     useEffect(() => {
-        if (!technician) {
+        if (!technicianSession) {
             navigate('/technician/home', { replace: true })
         }
-    }, [technician, navigate])
+    }, [technicianSession, navigate])
 
-    async function loadReviewsAndClients() {
-        if (!technician?.id) return
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: 'auto',
+        })
+    }, [])
+
+    async function loadTechnicianAndReviews() {
+        if (!technicianSession?.id) return
 
         try {
             setLoadingReviews(true)
             setReviewsError('')
 
-            const reviewResponses = await getTechnicianReviews(technician.id)
+            const freshTechnician = await getTechnicianProfile(technicianSession.id)
+            const reviewResponses = await getTechnicianReviews(technicianSession.id)
+
             const sortedReviews = [...reviewResponses].sort((a, b) => {
                 const firstDate = a.createdAt || ''
                 const secondDate = b.createdAt || ''
@@ -64,8 +76,10 @@ function TechnicianPublicProfilePage() {
 
             const resolvedClientMap = await resolveReviewClients(sortedReviews)
 
+            setTechnician(freshTechnician)
             setReviews(sortedReviews)
             setClientMap(resolvedClientMap)
+            localStorage.setItem('technicianSession', JSON.stringify(freshTechnician))
         } catch (error) {
             console.error('Error cargando reseñas del técnico:', error)
             setReviewsError('No se pudieron cargar las reseñas')
@@ -77,8 +91,8 @@ function TechnicianPublicProfilePage() {
     }
 
     useEffect(() => {
-        loadReviewsAndClients()
-    }, [technician?.id])
+        loadTechnicianAndReviews()
+    }, [technicianSession?.id])
 
     function getInitials() {
         const firstInitial = technician?.name?.trim()?.charAt(0)?.toUpperCase() || ''
@@ -95,7 +109,7 @@ function TechnicianPublicProfilePage() {
         try {
             setSubmittingReviewId(reviewId)
             await replyToReview(reviewId, technicianId, replyText)
-            await loadReviewsAndClients()
+            await loadTechnicianAndReviews()
         } catch (error) {
             console.error('Error respondiendo reseña:', error)
             setReviewsError('No se pudo guardar la respuesta')
@@ -108,7 +122,7 @@ function TechnicianPublicProfilePage() {
         try {
             setDeletingReplyId(reviewId)
             await deleteReviewReply(reviewId, technicianId)
-            await loadReviewsAndClients()
+            await loadTechnicianAndReviews()
         } catch (error) {
             console.error('Error eliminando respuesta:', error)
             setReviewsError('No se pudo eliminar la respuesta')
@@ -117,7 +131,7 @@ function TechnicianPublicProfilePage() {
         }
     }
 
-    if (!technician) {
+    if (!technicianSession || !technician) {
         return null
     }
 

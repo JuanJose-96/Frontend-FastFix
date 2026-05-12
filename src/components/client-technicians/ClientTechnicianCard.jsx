@@ -1,6 +1,9 @@
+import { useNavigate } from 'react-router-dom'
 import '../../styles/client-technician-card.css'
 
 function ClientTechnicianCard({ technician, reviewMeta }) {
+    const navigate = useNavigate()
+
     const fullName = `${technician.name || ''} ${technician.surname || ''}`.trim()
     const sectorName =
         technician.sectorName || technician.sector?.name || 'Sector no definido'
@@ -29,7 +32,17 @@ function ClientTechnicianCard({ technician, reviewMeta }) {
         return `34${digitsOnly}`
     }
 
-    function handleOpenWhatsApp() {
+    function handleOpenPublicProfile() {
+        navigate('/client/technician-profile', {
+            state: {
+                technician,
+            },
+        })
+    }
+
+    function handleOpenWhatsApp(event) {
+        event.stopPropagation()
+
         if (!technician.whatsappAvailable || !technician.phone) return
 
         const normalizedPhone = normalizeSpanishPhone(technician.phone)
@@ -39,8 +52,21 @@ function ClientTechnicianCard({ technician, reviewMeta }) {
         window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
     }
 
+    function handleCardKeyDown(event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            handleOpenPublicProfile()
+        }
+    }
+
     return (
-        <article className="client-technician-card">
+        <article
+            className="client-technician-card"
+            onClick={handleOpenPublicProfile}
+            onKeyDown={handleCardKeyDown}
+            role="button"
+            tabIndex={0}
+        >
             <div className="client-technician-card__avatar">
                 {technician.profileImageUrl ? (
                     <img
