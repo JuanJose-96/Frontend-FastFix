@@ -5,6 +5,7 @@ function TechnicianProfileAvatar({
     previewImageUrl,
     isEditing,
     onImageChange,
+    onDeleteImage,
 }) {
     function getInitials() {
         const firstInitial = technicianName?.trim()?.charAt(0)?.toUpperCase() || ''
@@ -47,9 +48,12 @@ function TechnicianProfileAvatar({
 
                     <button
                         type="button"
-                        className="technician-profile-avatar__action-button technician-profile-avatar__action-button--secondary technician-profile-avatar__action-button--disabled"
-                        disabled
-                        title="Pendiente hasta que exista endpoint en backend"
+                        className={`technician-profile-avatar__action-button technician-profile-avatar__action-button--secondary ${!imageToShow
+                                ? 'technician-profile-avatar__action-button--disabled'
+                                : ''
+                            }`}
+                        onClick={onDeleteImage}
+                        disabled={!imageToShow}
                     >
                         Borrar imagen
                     </button>

@@ -7,6 +7,7 @@ import TechnicianProfileForm from '../components/technician-profile/TechnicianPr
 import { getLocations, getProvinces } from '../services/locationService'
 import { getSectors } from '../services/sectorService'
 import {
+    deleteTechnicianProfileImage,
     getTechnicianProfile,
     updateTechnicianProfile,
     uploadTechnicianProfileImage,
@@ -59,6 +60,7 @@ function TechnicianProfilePage() {
     const [savingProfile, setSavingProfile] = useState(false)
     const [selectedImageFile, setSelectedImageFile] = useState(null)
     const [previewImageUrl, setPreviewImageUrl] = useState('')
+    const [imageMarkedForDeletion, setImageMarkedForDeletion] = useState(false)
     const [toastMessage, setToastMessage] = useState('')
     const [toastType, setToastType] = useState('error')
 
@@ -196,6 +198,7 @@ function TechnicianProfilePage() {
 
         setSelectedImageFile(null)
         setPreviewImageUrl('')
+        setImageMarkedForDeletion(false)
     }
 
     function handleStartEditing() {
@@ -308,7 +311,9 @@ function TechnicianProfilePage() {
 
             let finalTechnician = updatedTechnician
 
-            if (selectedImageFile) {
+            if (imageMarkedForDeletion) {
+                finalTechnician = await deleteTechnicianProfileImage(profileData.id)
+            } else if (selectedImageFile) {
                 finalTechnician = await uploadTechnicianProfileImage(
                     profileData.id,
                     selectedImageFile,
@@ -356,6 +361,19 @@ function TechnicianProfilePage() {
 
         setSelectedImageFile(file)
         setPreviewImageUrl(URL.createObjectURL(file))
+        setImageMarkedForDeletion(false)
+    }
+
+    function handleDeleteImage() {
+        if (!profileData?.profileImageUrl && !previewImageUrl) return
+
+        if (previewImageUrl) {
+            URL.revokeObjectURL(previewImageUrl)
+        }
+
+        setSelectedImageFile(null)
+        setPreviewImageUrl('')
+        setImageMarkedForDeletion(true)
     }
 
     if (!technicianSession || !profileData || !editForm) {
@@ -381,10 +399,11 @@ function TechnicianProfilePage() {
                     <TechnicianProfileAvatar
                         technicianName={profileData.name}
                         technicianSurname={profileData.surname}
-                        profileImageUrl={profileData.profileImageUrl}
+                        profileImageUrl={imageMarkedForDeletion ? '' : profileData.profileImageUrl}
                         previewImageUrl={previewImageUrl}
                         isEditing={isEditing}
                         onImageChange={handleImageChange}
+                        onDeleteImage={handleDeleteImage}
                     />
 
                     <TechnicianProfileForm
