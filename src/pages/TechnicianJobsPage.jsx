@@ -9,30 +9,30 @@ import TechnicianJobsList from '../components/technician-jobs/TechnicianJobsList
 import TechnicianJobsEmptyState from '../components/technician-jobs/TechnicianJobsEmptyState'
 import { getLocations, getProvinces } from '../services/locationService'
 import {
-    deleteTechnicianJob,
-    getTechnicianJobs,
-    saveTechnicianJob,
-    updateTechnicianJob,
-} from '../services/technicianJobsStorageService'
+    createTechnicianWork,
+    deleteTechnicianWork,
+    getTechnicianWorks,
+    updateTechnicianWork,
+} from '../services/technicianWorksService'
 import '../styles/technician-jobs.css'
 
 const INITIAL_FORM_DATA = {
     clientName: '',
-    province: '',
-    city: '',
-    startDate: '',
-    endDate: '',
-    totalPrice: '',
+    clientSurname: '',
+    clientProvince: '',
+    clientCity: '',
+    serviceDate: '',
+    totalAmount: '',
     serviceDescription: '',
 }
 
 const INITIAL_FIELD_ERRORS = {
     clientName: '',
-    province: '',
-    city: '',
-    startDate: '',
-    endDate: '',
-    totalPrice: '',
+    clientProvince: '',
+    clientCity: '',
+    serviceDate: '',
+    totalAmount: '',
+    serviceDescription: '',
 }
 
 function TechnicianJobsPage() {
@@ -59,17 +59,23 @@ function TechnicianJobsPage() {
     }, [technicianFromState, storedTechnician])
 
     const [jobs, setJobs] = useState([])
+    const [loadingJobs, setLoadingJobs] = useState(true)
+
     const [formData, setFormData] = useState(INITIAL_FORM_DATA)
     const [editingJobId, setEditingJobId] = useState(null)
+    const [isCreating, setIsCreating] = useState(false)
     const [fieldErrors, setFieldErrors] = useState(INITIAL_FIELD_ERRORS)
+
     const [provinces, setProvinces] = useState([])
     const [allLocations, setAllLocations] = useState([])
     const [loadingFilters, setLoadingFilters] = useState(true)
+
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [isDeletingJobId, setIsDeletingJobId] = useState(null)
+
     const [toastMessage, setToastMessage] = useState('')
     const [toastType, setToastType] = useState('error')
 
-    const isCreating = editingJobId === null && Object.values(formData).some((value) => value !== '')
     const isEditing = editingJobId !== null
 
     useEffect(() => {
@@ -81,11 +87,30 @@ function TechnicianJobsPage() {
     useEffect(() => {
         if (!technician) {
             navigate('/login', { replace: true })
-            return
         }
-
-        setJobs(getTechnicianJobs(technician.id))
     }, [technician, navigate])
+
+    async function loadJobs() {
+        if (!technician?.id) return
+
+        try {
+            setLoadingJobs(true)
+            const works = await getTechnicianWorks(technician.id)
+            setJobs(works)
+        } catch (error) {
+            console.error('Error cargando trabajos del técnico:', error)
+            setToastType('error')
+            setToastMessage('No se pudieron cargar los trabajos')
+            setJobs([])
+        } finally {
+            setLoadingJobs(false)
+        }
+    }
+
+    useEffect(() => {
+        if (!technician?.id) return
+        loadJobs()
+    }, [technician?.id])
 
     useEffect(() => {
         async function loadLocationsData() {
@@ -126,10 +151,10 @@ function TechnicianJobsPage() {
     }, [toastMessage])
 
     const filteredCities = useMemo(() => {
-        if (!formData.province) return []
+        if (!formData.clientProvince) return []
 
         const selectedProvince = provinces.find(
-            (province) => province.label === formData.province,
+            (province) => province.label === formData.clientProvince,
         )
 
         if (!selectedProvince) return []
@@ -137,31 +162,29 @@ function TechnicianJobsPage() {
         return allLocations
             .filter((location) => location.parent_code === selectedProvince.code)
             .sort((a, b) => a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }))
-    }, [allLocations, formData.province, provinces])
+    }, [allLocations, formData.clientProvince, provinces])
 
     function validateForm(currentForm) {
-        const errors = {
+        return {
             clientName: currentForm.clientName.trim()
                 ? ''
                 : 'Debes indicar el nombre del cliente',
-            province: currentForm.province ? '' : 'Debes seleccionar una provincia',
-            city: currentForm.city ? '' : 'Debes seleccionar una ciudad',
-            startDate: currentForm.startDate ? '' : 'Debes indicar la fecha de inicio',
-            endDate: currentForm.endDate ? '' : 'Debes indicar la fecha de fin',
-            totalPrice: currentForm.totalPrice.trim()
+            clientProvince: currentForm.clientProvince
                 ? ''
-                : 'Debes indicar el precio total',
+                : 'Debes seleccionar una provincia',
+            clientCity: currentForm.clientCity
+                ? ''
+                : 'Debes seleccionar una ciudad',
+            serviceDate: currentForm.serviceDate
+                ? ''
+                : 'Debes indicar la fecha del servicio',
+            totalAmount: currentForm.totalAmount.toString().trim()
+                ? ''
+                : 'Debes indicar el importe total',
+            serviceDescription: currentForm.serviceDescription.trim()
+                ? ''
+                : 'Debes indicar la descripción del servicio',
         }
-
-        if (
-            currentForm.startDate &&
-            currentForm.endDate &&
-            currentForm.endDate < currentForm.startDate
-        ) {
-            errors.endDate = 'La fecha de fin no puede ser anterior a la de inicio'
-        }
-
-        return errors
     }
 
     function hasErrors(errors) {
@@ -171,11 +194,15 @@ function TechnicianJobsPage() {
     function resetForm() {
         setFormData(INITIAL_FORM_DATA)
         setEditingJobId(null)
+        setIsCreating(false)
         setFieldErrors(INITIAL_FIELD_ERRORS)
     }
 
     function handleStartCreate() {
-        resetForm()
+        setEditingJobId(null)
+        setFormData(INITIAL_FORM_DATA)
+        setFieldErrors(INITIAL_FIELD_ERRORS)
+        setIsCreating(true)
     }
 
     function handleCancelForm() {
@@ -186,11 +213,11 @@ function TechnicianJobsPage() {
         const { name, value } = event.target
 
         setFormData((previousForm) => {
-            if (name === 'province') {
+            if (name === 'clientProvince') {
                 return {
                     ...previousForm,
-                    province: value,
-                    city: '',
+                    clientProvince: value,
+                    clientCity: '',
                 }
             }
 
@@ -209,33 +236,44 @@ function TechnicianJobsPage() {
     }
 
     function handleEditJob(job) {
+        setIsCreating(false)
         setEditingJobId(job.id)
         setFormData({
             clientName: job.clientName || '',
-            province: job.province || '',
-            city: job.city || '',
-            startDate: job.startDate || '',
-            endDate: job.endDate || '',
-            totalPrice: job.totalPrice || '',
+            clientSurname: job.clientSurname || '',
+            clientProvince: job.clientProvince || '',
+            clientCity: job.clientCity || '',
+            serviceDate: job.serviceDate || '',
+            totalAmount: job.totalAmount?.toString() || '',
             serviceDescription: job.serviceDescription || '',
         })
         setFieldErrors(INITIAL_FIELD_ERRORS)
     }
 
-    function handleDeleteJob(jobId) {
+    async function handleDeleteJob(jobId) {
         if (!technician?.id) return
 
-        deleteTechnicianJob(technician.id, jobId)
-        setJobs(getTechnicianJobs(technician.id))
-        setToastType('success')
-        setToastMessage('Trabajo eliminado correctamente')
+        try {
+            setIsDeletingJobId(jobId)
+            await deleteTechnicianWork(jobId)
+            await loadJobs()
 
-        if (editingJobId === jobId) {
-            resetForm()
+            setToastType('success')
+            setToastMessage('Trabajo eliminado correctamente')
+
+            if (editingJobId === jobId) {
+                resetForm()
+            }
+        } catch (error) {
+            console.error('Error eliminando trabajo del técnico:', error)
+            setToastType('error')
+            setToastMessage('No se pudo eliminar el trabajo')
+        } finally {
+            setIsDeletingJobId(null)
         }
     }
 
-    function handleSubmit(event) {
+    async function handleSubmit(event) {
         event.preventDefault()
 
         if (!technician?.id) return
@@ -249,20 +287,32 @@ function TechnicianJobsPage() {
             return
         }
 
+        const payload = {
+            technicianId: technician.id,
+            clientId: null,
+            clientName: formData.clientName.trim(),
+            clientSurname: formData.clientSurname.trim() || null,
+            clientProvince: formData.clientProvince,
+            clientCity: formData.clientCity,
+            serviceDate: formData.serviceDate,
+            totalAmount: formData.totalAmount,
+            serviceDescription: formData.serviceDescription.trim(),
+        }
+
         try {
             setIsSubmitting(true)
 
             if (editingJobId) {
-                updateTechnicianJob(technician.id, editingJobId, formData)
+                await updateTechnicianWork(editingJobId, payload)
                 setToastType('success')
                 setToastMessage('Trabajo actualizado correctamente')
             } else {
-                saveTechnicianJob(technician.id, formData)
+                await createTechnicianWork(payload)
                 setToastType('success')
                 setToastMessage('Trabajo guardado correctamente')
             }
 
-            setJobs(getTechnicianJobs(technician.id))
+            await loadJobs()
             resetForm()
         } catch (error) {
             console.error('Error guardando trabajo del técnico:', error)
@@ -315,21 +365,24 @@ function TechnicianJobsPage() {
                     />
                 )}
 
-                {!isCreating && !isEditing && jobs.length === 0 && (
+                {!isCreating && !isEditing && !loadingJobs && jobs.length === 0 && (
                     <TechnicianJobsEmptyState onCreate={handleStartCreate} />
                 )}
 
-                {jobs.length > 0 && (
+                {!loadingJobs && jobs.length > 0 && (
                     <TechnicianJobsList
                         jobs={jobs}
+                        deletingJobId={isDeletingJobId}
                         onEdit={handleEditJob}
                         onDelete={handleDeleteJob}
                     />
                 )}
 
-                {loadingFilters && (
+                {(loadingFilters || loadingJobs) && (
                     <p className="technician-jobs-page__loading">
-                        Cargando provincias y ciudades...
+                        {loadingJobs
+                            ? 'Cargando trabajos...'
+                            : 'Cargando provincias y ciudades...'}
                     </p>
                 )}
             </main>
