@@ -5,6 +5,7 @@ function ClientProfileAvatar({
     previewImageUrl,
     isEditing,
     onImageChange,
+    onDeleteImage,
 }) {
     function getInitials() {
         const firstInitial = clientName?.trim()?.charAt(0)?.toUpperCase() || ''
@@ -20,7 +21,7 @@ function ClientProfileAvatar({
     const imageToShow = previewImageUrl || profileImageUrl
 
     return (
-        <div className="client-profile-avatar">
+        <aside className="client-profile-avatar">
             <div className="client-profile-avatar__circle">
                 {imageToShow ? (
                     <img
@@ -29,33 +30,41 @@ function ClientProfileAvatar({
                         className="client-profile-avatar__image"
                     />
                 ) : (
-                    <span className="client-profile-avatar__initials">{getInitials()}</span>
+                    <span className="client-profile-avatar__initials">
+                        {getInitials()}
+                    </span>
                 )}
             </div>
 
             {isEditing && (
                 <div className="client-profile-avatar__actions">
-                    <label className="client-profile-avatar__action-button client-profile-avatar__action-button--primary">
+                    <label
+                        htmlFor="client-profile-image-input"
+                        className="client-profile-avatar__action-button client-profile-avatar__action-button--primary"
+                    >
                         Subir imagen
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={onImageChange}
-                            className="client-profile-avatar__file-input"
-                        />
                     </label>
+
+                    <input
+                        id="client-profile-image-input"
+                        type="file"
+                        accept="image/*"
+                        className="client-profile-avatar__file-input"
+                        onChange={onImageChange}
+                    />
 
                     <button
                         type="button"
-                        className="client-profile-avatar__action-button client-profile-avatar__action-button--secondary client-profile-avatar__action-button--disabled"
-                        disabled
-                        title="Pendiente hasta que exista endpoint en backend"
+                        className={`client-profile-avatar__action-button client-profile-avatar__action-button--secondary ${!imageToShow ? 'client-profile-avatar__action-button--disabled' : ''
+                            }`}
+                        onClick={onDeleteImage}
+                        disabled={!imageToShow}
                     >
                         Borrar imagen
                     </button>
                 </div>
             )}
-        </div>
+        </aside>
     )
 }
 
