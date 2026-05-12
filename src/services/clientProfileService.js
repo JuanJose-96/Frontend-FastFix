@@ -1,5 +1,10 @@
 import axiosClient from '../api/axiosClient'
 
+export async function getClientProfile(clientId) {
+    const response = await axiosClient.get(`/client/profile/${clientId}`)
+    return response.data
+}
+
 export async function updateClientProfile(clientId, profileData) {
     const response = await axiosClient.put(`/client/profile/${clientId}`, profileData)
     return response.data
