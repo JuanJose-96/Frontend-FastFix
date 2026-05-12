@@ -7,31 +7,36 @@ function TechnicianJobsToolbar({
 }) {
     return (
         <section className="technician-jobs-toolbar">
-            <div>
-                <h2 className="technician-jobs-toolbar__title">Listado de trabajos</h2>
-                <p className="technician-jobs-toolbar__subtitle">
-                    {totalJobs} trabajo{totalJobs === 1 ? '' : 's'} registrado
-                    {totalJobs === 1 ? '' : 's'}
-                </p>
+            <div className="technician-jobs-toolbar__summary">
+                <span className="technician-jobs-toolbar__summary-label">
+                    Total de trabajos
+                </span>
+                <span className="technician-jobs-toolbar__summary-value">
+                    {totalJobs}
+                </span>
             </div>
 
-            {!isCreating && !isEditing ? (
-                <button
-                    type="button"
-                    className="technician-jobs-toolbar__primary-button"
-                    onClick={onStartCreate}
-                >
-                    Añadir trabajo
-                </button>
-            ) : (
-                <button
-                    type="button"
-                    className="technician-jobs-toolbar__secondary-button"
-                    onClick={onCancelForm}
-                >
-                    Cancelar
-                </button>
-            )}
+            <div className="technician-jobs-toolbar__actions">
+                {!isCreating && !isEditing && (
+                    <button
+                        type="button"
+                        className="technician-jobs-toolbar__button technician-jobs-toolbar__button--primary"
+                        onClick={onStartCreate}
+                    >
+                        Añadir trabajo
+                    </button>
+                )}
+
+                {(isCreating || isEditing) && (
+                    <button
+                        type="button"
+                        className="technician-jobs-toolbar__button technician-jobs-toolbar__button--secondary"
+                        onClick={onCancelForm}
+                    >
+                        Cancelar
+                    </button>
+                )}
+            </div>
         </section>
     )
 }
