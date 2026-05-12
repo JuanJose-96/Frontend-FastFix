@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import Toast from '../components/common/Toast'
 import ClientHomeHeader from '../components/client-home/ClientHomeHeader'
 import ClientProfileAvatar from '../components/client-profile/ClientProfileAvatar'
 import ClientProfileForm from '../components/client-profile/ClientProfileForm'
-import Toast from '../components/common/Toast'
 import { getLocations, getProvinces } from '../services/locationService'
 import {
+    deleteClientProfileImage,
     updateClientProfile,
     uploadClientProfileImage,
 } from '../services/clientProfileService'
@@ -25,6 +26,11 @@ function ClientProfilePage() {
     const navigate = useNavigate()
 
     const [storedClient] = useState(() => getClientSession())
+    const clientFromState = location.state?.client
+
+    const clientSession = useMemo(() => {
+        return clientFromState || storedClient
+    }, [clientFromState, storedClient])
 
     const [profileData, setProfileData] = useState(null)
     const [editForm, setEditForm] = useState(null)
@@ -32,20 +38,18 @@ function ClientProfilePage() {
 
     const [provinces, setProvinces] = useState([])
     const [allLocations, setAllLocations] = useState([])
-    const [loadingLocations, setLoadingLocations] = useState(true)
+    const [loadingProfile, setLoadingProfile] = useState(true)
+    const [loadingAuxData, setLoadingAuxData] = useState(true)
 
     const [fieldErrors, setFieldErrors] = useState(INITIAL_FIELD_ERRORS)
     const [savingProfile, setSavingProfile] = useState(false)
+
     const [selectedImageFile, setSelectedImageFile] = useState(null)
     const [previewImageUrl, setPreviewImageUrl] = useState('')
+    const [imageMarkedForDeletion, setImageMarkedForDeletion] = useState(false)
+
     const [toastMessage, setToastMessage] = useState('')
     const [toastType, setToastType] = useState('error')
-
-    const clientFromState = location.state?.client
-
-    const client = useMemo(() => {
-        return clientFromState || storedClient
-    }, [clientFromState, storedClient])
 
     useEffect(() => {
         if (clientFromState) {
@@ -54,26 +58,43 @@ function ClientProfilePage() {
     }, [clientFromState])
 
     useEffect(() => {
-        if (!client) {
+        if (!clientSession) {
             navigate('/login', { replace: true })
-            return
         }
-
-        setProfileData(client)
-        setEditForm({
-            name: client.name || '',
-            surname: client.surname || '',
-            phone: client.phone || '',
-            province: client.province || '',
-            city: client.city || '',
-            whatsappAvailable: Boolean(client.whatsappAvailable),
-        })
-    }, [client, navigate])
+    }, [clientSession, navigate])
 
     useEffect(() => {
-        async function loadLocations() {
+        if (!clientSession?.id) return
+
+        setLoadingProfile(true)
+
+        const nextProfile = {
+            id: clientSession.id,
+            name: clientSession.name || '',
+            surname: clientSession.surname || '',
+            phone: clientSession.phone || '',
+            province: clientSession.province || '',
+            city: clientSession.city || '',
+            whatsappAvailable: Boolean(clientSession.whatsappAvailable),
+            profileImageUrl: clientSession.profileImageUrl || '',
+        }
+
+        setProfileData(nextProfile)
+        setEditForm({
+            name: nextProfile.name,
+            surname: nextProfile.surname,
+            phone: nextProfile.phone,
+            province: nextProfile.province,
+            city: nextProfile.city,
+            whatsappAvailable: nextProfile.whatsappAvailable,
+        })
+        setLoadingProfile(false)
+    }, [clientSession?.id, clientSession])
+
+    useEffect(() => {
+        async function loadAuxiliaryData() {
             try {
-                setLoadingLocations(true)
+                setLoadingAuxData(true)
 
                 const [provincesData, locationsData] = await Promise.all([
                     getProvinces(),
@@ -87,15 +108,15 @@ function ClientProfilePage() {
                 setProvinces(sortedProvinces)
                 setAllLocations(locationsData)
             } catch (error) {
-                console.error('Error cargando provincias y ciudades del perfil:', error)
+                console.error('Error cargando datos auxiliares del perfil cliente:', error)
                 setToastType('error')
                 setToastMessage('No se pudieron cargar provincias y ciudades')
             } finally {
-                setLoadingLocations(false)
+                setLoadingAuxData(false)
             }
         }
 
-        loadLocations()
+        loadAuxiliaryData()
     }, [])
 
     useEffect(() => {
@@ -153,6 +174,7 @@ function ClientProfilePage() {
 
         setSelectedImageFile(null)
         setPreviewImageUrl('')
+        setImageMarkedForDeletion(false)
     }
 
     function handleStartEditing() {
@@ -224,6 +246,31 @@ function ClientProfilePage() {
         }
     }
 
+    function handleImageChange(event) {
+        const file = event.target.files?.[0] || null
+        if (!file) return
+
+        if (previewImageUrl) {
+            URL.revokeObjectURL(previewImageUrl)
+        }
+
+        setSelectedImageFile(file)
+        setPreviewImageUrl(URL.createObjectURL(file))
+        setImageMarkedForDeletion(false)
+    }
+
+    function handleDeleteImage() {
+        if (!profileData?.profileImageUrl && !previewImageUrl) return
+
+        if (previewImageUrl) {
+            URL.revokeObjectURL(previewImageUrl)
+        }
+
+        setSelectedImageFile(null)
+        setPreviewImageUrl('')
+        setImageMarkedForDeletion(true)
+    }
+
     async function handleSaveProfile() {
         if (!profileData || !editForm) return
 
@@ -250,20 +297,33 @@ function ClientProfilePage() {
 
             let finalClient = updatedClient
 
-            if (selectedImageFile) {
+            if (imageMarkedForDeletion) {
+                finalClient = await deleteClientProfileImage(profileData.id)
+            } else if (selectedImageFile) {
                 finalClient = await uploadClientProfileImage(profileData.id, selectedImageFile)
             }
 
-            setProfileData(finalClient)
-            saveClientSession(finalClient)
-
-            setEditForm({
+            const nextProfile = {
+                id: finalClient.id,
                 name: finalClient.name || '',
                 surname: finalClient.surname || '',
                 phone: finalClient.phone || '',
                 province: finalClient.province || '',
                 city: finalClient.city || '',
                 whatsappAvailable: Boolean(finalClient.whatsappAvailable),
+                profileImageUrl: finalClient.profileImageUrl || '',
+            }
+
+            setProfileData(nextProfile)
+            saveClientSession(finalClient)
+
+            setEditForm({
+                name: nextProfile.name,
+                surname: nextProfile.surname,
+                phone: nextProfile.phone,
+                province: nextProfile.province,
+                city: nextProfile.city,
+                whatsappAvailable: nextProfile.whatsappAvailable,
             })
 
             resetImageSelection()
@@ -272,7 +332,7 @@ function ClientProfilePage() {
             setToastType('success')
             setToastMessage('Perfil actualizado correctamente')
         } catch (error) {
-            console.error('Error actualizando perfil:', error)
+            console.error('Error actualizando perfil del cliente:', error)
             setToastType('error')
             setToastMessage('No se pudo actualizar el perfil')
         } finally {
@@ -280,20 +340,7 @@ function ClientProfilePage() {
         }
     }
 
-    function handleImageChange(event) {
-        const file = event.target.files?.[0] || null
-
-        if (!file) return
-
-        if (previewImageUrl) {
-            URL.revokeObjectURL(previewImageUrl)
-        }
-
-        setSelectedImageFile(file)
-        setPreviewImageUrl(URL.createObjectURL(file))
-    }
-
-    if (!profileData || !editForm) {
+    if (!clientSession || !profileData || !editForm) {
         return null
     }
 
@@ -316,10 +363,11 @@ function ClientProfilePage() {
                     <ClientProfileAvatar
                         clientName={profileData.name}
                         clientSurname={profileData.surname}
-                        profileImageUrl={profileData.profileImageUrl}
+                        profileImageUrl={imageMarkedForDeletion ? '' : profileData.profileImageUrl}
                         previewImageUrl={previewImageUrl}
                         isEditing={isEditing}
                         onImageChange={handleImageChange}
+                        onDeleteImage={handleDeleteImage}
                     />
 
                     <ClientProfileForm
@@ -337,9 +385,9 @@ function ClientProfilePage() {
                     />
                 </div>
 
-                {loadingLocations && (
+                {(loadingProfile || loadingAuxData) && (
                     <p className="client-profile-page__loading">
-                        Cargando provincias y ciudades...
+                        Cargando información del perfil...
                     </p>
                 )}
             </main>
