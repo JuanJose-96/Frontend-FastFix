@@ -17,3 +17,8 @@ export async function uploadClientProfileImage(clientId, imageFile) {
 
     return response.data
 }
+
+export async function deleteClientProfileImage(clientId) {
+    const response = await axiosClient.delete(`/client/profile/${clientId}/image`)
+    return response.data
+}

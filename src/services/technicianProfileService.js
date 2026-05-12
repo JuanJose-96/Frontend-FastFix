@@ -30,3 +30,8 @@ export async function uploadTechnicianProfileImage(technicianId, imageFile) {
     return response.data
 }
 
+export async function deleteTechnicianProfileImage(technicianId) {
+    const response = await axiosClient.delete(`/technician/profile/${technicianId}/image`)
+    return response.data
+}
+
