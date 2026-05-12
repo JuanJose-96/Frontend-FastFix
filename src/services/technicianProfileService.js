@@ -29,3 +29,4 @@ export async function uploadTechnicianProfileImage(technicianId, imageFile) {
 
     return response.data
 }
+

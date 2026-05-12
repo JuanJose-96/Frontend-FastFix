@@ -1,0 +1,137 @@
+.client-home-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: rgba(255, 255, 255, 0.96);
+    border-bottom: 1px solid #e5e7eb;
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 18px 24px;
+}
+
+.client-home-header__brand {
+    font-size: 30px;
+    font-weight: 800;
+    color: #16324f;
+}
+
+.client-home-header__nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.client-home-header__nav-item {
+    border: none;
+    background: transparent;
+    color: #334155;
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 12px;
+    transition:
+        background-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.client-home-header__nav-item:hover {
+    background: #f8fafc;
+    color: #16324f;
+    transform: translateY(-1px);
+}
+
+.client-home-header__nav-item--active {
+    color: #16324f;
+}
+
+.client-home-header__nav-label {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.client-home-header__nav-item--active .client-home-header__nav-label {
+    font-weight: 800;
+}
+
+.client-home-header__actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.client-home-header__user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.client-home-header__welcome {
+    color: #475569;
+    font-size: 14px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.client-home-header__avatar {
+    width: 42px;
+    height: 42px;
+    min-width: 42px;
+    min-height: 42px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #dbe7f3;
+    color: #16324f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #111827;
+    flex-shrink: 0;
+}
+
+.client-home-header__avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.client-home-header__avatar-initials {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    color: #16324f;
+}
+
+.client-home-header__logout {
+    border: 1px solid #cbd5e1;
+    background: white;
+    color: #16324f;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+@media (max-width: 992px) {
+    .client-home-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .client-home-header__actions {
+        width: 100%;
+        justify-content: space-between;
+        flex-wrap: wrap;
+    }
+
+    .client-home-header__nav {
+        width: 100%;
+    }
+}

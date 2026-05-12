@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import ClientHomeHeader from '../components/client-home/ClientHomeHeader'
 import ClientHomeHero from '../components/client-home/ClientHomeHero'
@@ -9,7 +9,8 @@ import { searchTechnicians } from '../services/technicianSearchService'
 import { getClientSession, saveClientSession } from '../utils/clientSession'
 import '../styles/client-home.css'
 
-const MAX_TECHNICIANS_PER_SECTION = 15
+const MAX_TECHNICIANS_PER_SECTION = 16
+const HOME_ROWS_REFRESH_INTERVAL_MS = 10000
 
 const INITIAL_QUICK_SEARCH_FILTERS = {
     sectorId: '',
@@ -158,46 +159,79 @@ function ClientHomePage() {
         })
     }
 
-    useEffect(() => {
+    const loadHomeRows = useCallback(async (showInitialLoader = false) => {
         if (!client) return
 
-        async function loadHomeData() {
-            try {
+        try {
+            if (showInitialLoader) {
                 setLoadingHome(true)
-                setHomeError('')
+            }
 
-                const allTechnicians = await searchTechnicians()
-                const uniqueAllTechnicians = getUniqueTechnicians(allTechnicians)
+            setHomeError('')
 
-                const sortedTopRated = [...uniqueAllTechnicians]
-                    .sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0))
-                    .slice(0, MAX_TECHNICIANS_PER_SECTION)
+            const [
+                provinceTechniciansResponse,
+                topRatedTechniciansResponse,
+            ] = await Promise.all([
+                searchTechnicians({
+                    province: client.province || undefined,
+                }),
+                searchTechnicians({
+                    rating: 4,
+                }),
+            ])
 
-                const sameProvinceTechnicians = uniqueAllTechnicians
-                    .filter((technician) => technician.province === client.province)
-                    .slice(0, MAX_TECHNICIANS_PER_SECTION)
+            const uniqueProvinceTechnicians = getUniqueTechnicians(provinceTechniciansResponse)
+            const uniqueTopRatedTechnicians = getUniqueTechnicians(topRatedTechniciansResponse)
 
-                const emergencyProvinceTechnicians = uniqueAllTechnicians
-                    .filter(
-                        (technician) =>
-                            technician.province === client.province &&
-                            technician.emergencyAvailability,
-                    )
-                    .slice(0, MAX_TECHNICIANS_PER_SECTION)
+            const sameProvinceTechnicians = uniqueProvinceTechnicians
+                .slice(0, MAX_TECHNICIANS_PER_SECTION)
 
-                setTopRatedTechnicians(sortedTopRated)
-                setNearbyTechnicians(sameProvinceTechnicians)
-                setEmergencyTechnicians(emergencyProvinceTechnicians)
-            } catch (error) {
-                console.error('Error cargando la home del cliente:', error)
-                setHomeError('No se pudo cargar la información principal')
-            } finally {
+            const emergencyProvinceTechnicians = uniqueProvinceTechnicians
+                .filter((technician) => technician.emergencyAvailability)
+                .slice(0, MAX_TECHNICIANS_PER_SECTION)
+
+            const sortedTopRated = [...uniqueTopRatedTechnicians]
+                .filter((technician) => Number(technician.averageRating || 0) >= 4)
+                .sort((a, b) => {
+                    const ratingDifference =
+                        Number(b.averageRating || 0) - Number(a.averageRating || 0)
+
+                    if (ratingDifference !== 0) {
+                        return ratingDifference
+                    }
+
+                    const nameA = `${a.name || ''} ${a.surname || ''}`.trim().toLowerCase()
+                    const nameB = `${b.name || ''} ${b.surname || ''}`.trim().toLowerCase()
+
+                    return nameA.localeCompare(nameB, 'es', { sensitivity: 'base' })
+                })
+                .slice(0, MAX_TECHNICIANS_PER_SECTION)
+
+            setNearbyTechnicians(sameProvinceTechnicians)
+            setTopRatedTechnicians(sortedTopRated)
+            setEmergencyTechnicians(emergencyProvinceTechnicians)
+        } catch (error) {
+            console.error('Error cargando la home del cliente:', error)
+            setHomeError('No se pudo cargar la información principal')
+        } finally {
+            if (showInitialLoader) {
                 setLoadingHome(false)
             }
         }
-
-        loadHomeData()
     }, [client])
+
+    useEffect(() => {
+        if (!client) return
+
+        loadHomeRows(true)
+
+        const intervalId = window.setInterval(() => {
+            loadHomeRows(false)
+        }, HOME_ROWS_REFRESH_INTERVAL_MS)
+
+        return () => window.clearInterval(intervalId)
+    }, [client, loadHomeRows])
 
     if (!client) {
         return null
@@ -229,21 +263,21 @@ function ClientHomePage() {
                     <>
                         <TechnicianSection
                             title="Técnicos cerca de ti"
-                            description="Mostramos hasta 15 técnicos de tu misma provincia."
+                            description="Mostramos hasta 16 técnicos de tu misma provincia."
                             technicians={nearbyTechnicians}
                             emptyMessage="No hay técnicos disponibles todavía en tu provincia."
                         />
 
                         <TechnicianSection
                             title="Mejor valorados"
-                            description="Los 15 técnicos con mejor valoración global, mostrados en bloques de cinco."
+                            description="Mostramos hasta 16 técnicos con valoración media igual o superior a 4, en bloques de cuatro."
                             technicians={topRatedTechnicians}
-                            emptyMessage="Todavía no hay suficientes valoraciones para mostrar este bloque."
+                            emptyMessage="Todavía no hay suficientes técnicos con valoración igual o superior a 4."
                         />
 
                         <TechnicianSection
                             title="Urgencias en tu provincia"
-                            description="Mostramos hasta 15 técnicos de tu provincia que aceptan servicios urgentes."
+                            description="Mostramos hasta 16 técnicos de tu provincia que aceptan servicios urgentes."
                             technicians={emergencyTechnicians}
                             emptyMessage="No hay técnicos con servicio de urgencias disponibles en tu provincia."
                         />

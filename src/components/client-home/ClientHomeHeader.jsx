@@ -1,5 +1,29 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { clearClientSession } from '../../utils/clientSession'
+import '../../styles/client-header.css'
+
+const NAV_ITEMS = [
+    {
+        key: 'home',
+        label: 'Inicio',
+        path: '/client/home',
+    },
+    {
+        key: 'explore',
+        label: 'Explorar',
+        path: '/client/explore',
+    },
+    {
+        key: 'reviews',
+        label: 'Mis reseñas',
+        path: '/client/reviews',
+    },
+    {
+        key: 'profile',
+        label: 'Perfil',
+        path: '/client/profile',
+    },
+]
 
 function ClientHomeHeader({
     clientName,
@@ -9,19 +33,9 @@ function ClientHomeHeader({
     const navigate = useNavigate()
     const location = useLocation()
 
-    function handleGoHome() {
-        if (location.pathname === '/client/home') return
-        navigate('/client/home')
-    }
-
-    function handleGoExplore() {
-        if (location.pathname === '/client/explore') return
-        navigate('/client/explore')
-    }
-
-    function handleGoProfile() {
-        if (location.pathname === '/client/profile') return
-        navigate('/client/profile')
+    function handleNavigate(path) {
+        if (location.pathname === path) return
+        navigate(path)
     }
 
     function handleLogout() {
@@ -44,30 +58,23 @@ function ClientHomeHeader({
         <header className="client-home-header">
             <div className="client-home-header__brand">FastFix</div>
 
-            <nav className="client-home-header__nav">
-                <button
-                    type="button"
-                    className="client-home-header__link"
-                    onClick={handleGoHome}
-                >
-                    Inicio
-                </button>
+            <nav className="client-home-header__nav" aria-label="Navegación cliente">
+                {NAV_ITEMS.map((item) => {
+                    const isActive = location.pathname === item.path
 
-                <button
-                    type="button"
-                    className="client-home-header__link"
-                    onClick={handleGoExplore}
-                >
-                    Explorar
-                </button>
-
-                <button
-                    type="button"
-                    className="client-home-header__link"
-                    onClick={handleGoProfile}
-                >
-                    Perfil
-                </button>
+                    return (
+                        <button
+                            key={item.key}
+                            type="button"
+                            className={`client-home-header__nav-item ${isActive ? 'client-home-header__nav-item--active' : ''
+                                }`}
+                            onClick={() => handleNavigate(item.path)}
+                            aria-current={isActive ? 'page' : undefined}
+                        >
+                            <span className="client-home-header__nav-label">{item.label}</span>
+                        </button>
+                    )
+                })}
             </nav>
 
             <div className="client-home-header__actions">
