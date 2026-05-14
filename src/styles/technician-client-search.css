@@ -345,3 +345,25 @@
         grid-template-columns: 1fr;
     }
 }
+
+.technician-client-search-page__load-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.technician-client-search-page__load-more-button {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    background: #16324f;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.technician-client-search-page__load-more-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

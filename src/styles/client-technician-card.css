@@ -177,3 +177,8 @@
     display: inline-flex;
     align-items: center;
 }
+
+.client-technician-card--muted {
+    opacity: 0.42;
+    filter: grayscale(100%);
+}
