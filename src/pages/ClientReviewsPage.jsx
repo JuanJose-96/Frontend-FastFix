@@ -6,7 +6,7 @@ import ClientReviewedTechniciansEmptyState from '../components/client-reviews/Cl
 import ClientTechnicianCard from '../components/client-technicians/ClientTechnicianCard'
 import { getClientReviews } from '../services/clientReviewService'
 import { getTechnicianProfile } from '../services/technicianProfileService'
-import { getClientSession, saveClientSession } from '../utils/clientSession'
+import { getClientSession, saveClientSession } from '../utils/ClientSession'
 import '../styles/client-reviews.css'
 import '../styles/client-technician-section.css'
 

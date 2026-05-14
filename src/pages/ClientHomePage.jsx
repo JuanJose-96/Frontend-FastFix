@@ -6,7 +6,7 @@ import TechnicianSection from '../components/client-home/TechnicianSection'
 import { getLocations, getProvinces } from '../services/locationService'
 import { getSectors } from '../services/sectorService'
 import { searchTechnicians } from '../services/technicianSearchService'
-import { getClientSession, saveClientSession } from '../utils/clientSession'
+import { getClientSession, saveClientSession } from '../utils/ClientSession'
 import '../styles/client-home.css'
 
 const MAX_TECHNICIANS_PER_SECTION = 16

@@ -8,7 +8,7 @@ import TechnicianEmptyState from '../components/technician-explore/TechnicianEmp
 import { getLocations, getProvinces } from '../services/locationService'
 import { getSectors } from '../services/sectorService'
 import { searchTechnicians } from '../services/technicianSearchService'
-import { getClientSession, saveClientSession } from '../utils/clientSession'
+import { getClientSession, saveClientSession } from '../utils/ClientSession'
 import '../styles/technician-explore.css'
 
 const INITIAL_FILTERS = {

@@ -10,7 +10,7 @@ import {
     updateClientProfile,
     uploadClientProfileImage,
 } from '../services/clientProfileService'
-import { getClientSession, saveClientSession } from '../utils/clientSession'
+import { getClientSession, saveClientSession } from '../utils/ClientSession'
 import '../styles/client-profile.css'
 
 const INITIAL_FIELD_ERRORS = {

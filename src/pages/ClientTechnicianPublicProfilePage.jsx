@@ -15,7 +15,7 @@ import {
     publishReview,
 } from '../services/reviewService'
 import { resolveReviewClients } from '../services/reviewClientResolverService'
-import { getClientSession } from '../utils/clientSession'
+import { getClientSession } from '../utils/ClientSession'
 import '../styles/client-technician-public-profile.css'
 
 const INITIAL_REVIEW_FORM = {
@@ -330,8 +330,8 @@ function ClientTechnicianPublicProfilePage() {
                                 <button
                                     type="button"
                                     className={`client-technician-public-profile-card__whatsapp ${technician.whatsappAvailable
-                                            ? 'client-technician-public-profile-card__whatsapp--available'
-                                            : 'client-technician-public-profile-card__whatsapp--unavailable'
+                                        ? 'client-technician-public-profile-card__whatsapp--available'
+                                        : 'client-technician-public-profile-card__whatsapp--unavailable'
                                         }`}
                                     onClick={handleOpenWhatsApp}
                                     disabled={!technician.whatsappAvailable || !technician.phone}
