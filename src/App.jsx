@@ -1,32 +1,44 @@
+import { Routes, Route } from 'react-router-dom'
+import LandingPage from './pages/LandingPage'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import ClientHomePage from './pages/ClientHomePage'
+import TechnicianHomePage from './pages/TechnicianHomePage'
+import TechnicianExplorePage from './pages/TechnicianExplorePage'
+import ClientProfilePage from './pages/ClientProfilePage'
+import TechnicianProfilePage from './pages/TechnicianProfilePage'
+import TechnicianPublicProfilePage from './pages/TechnicianPublicProfilePage'
+import TechnicianClientSearchPage from './pages/TechnicianClientSearchPage'
+import TechnicianJobsPage from './pages/TechnicianJobsPage'
+import ClientReviewsPage from './pages/ClientReviewsPage'
+import ClientTechnicianPublicProfilePage from './pages/ClientTechnicianPublicProfilePage'
+
 function App() {
   return (
-    <div className="container">
-      <div className="card">
-        <h1>Iniciar sesión</h1>
-
-        <form className="form">
-          <div className="field">
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              placeholder="Introduce tu email"
-            />
-          </div>
-
-          <div className="field">
-            <label htmlFor="password">Contraseña</label>
-            <input
-              id="password"
-              type="password"
-              placeholder="Introduce tu contraseña"
-            />
-          </div>
-
-          <button type="submit">Entrar</button>
-        </form>
-      </div>
-    </div>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
+      <Route path="/client/home" element={<ClientHomePage />} />
+      <Route path="/client/explore" element={<TechnicianExplorePage />} />
+      <Route path="/client/profile" element={<ClientProfilePage />} />
+      <Route path="/client/reviews" element={<ClientReviewsPage />} />
+      <Route
+        path="/client/technician-profile"
+        element={<ClientTechnicianPublicProfilePage />}
+      />
+      <Route path="/technician/home" element={<TechnicianHomePage />} />
+      <Route path="/technician/profile" element={<TechnicianProfilePage />} />
+      <Route
+        path="/technician/public-profile"
+        element={<TechnicianPublicProfilePage />}
+      />
+      <Route
+        path="/technician/clients"
+        element={<TechnicianClientSearchPage />}
+      />
+      <Route path="/technician/jobs" element={<TechnicianJobsPage />} />
+    </Routes>
   )
 }
 

@@ -1,0 +1,367 @@
+.technician-home-page {
+    min-height: 100vh;
+    background: #f4f6f8;
+    color: #1f2a37;
+    font-family: Arial, sans-serif;
+}
+
+.technician-home-page__main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 24px 56px;
+}
+
+.technician-home-page__top-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.technician-home-page__content-grid {
+    display: grid;
+    grid-template-columns: 1.35fr 1fr;
+    gap: 24px;
+}
+
+/* CARDS */
+.technician-panel-card,
+.technician-welcome-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 28px 24px;
+    box-sizing: border-box;
+}
+
+.technician-panel-card__header {
+    margin-bottom: 20px;
+}
+
+.technician-panel-card__title {
+    margin: 0;
+    color: #16324f;
+    font-size: 24px;
+}
+
+.technician-panel-card--compact {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.technician-welcome-card__eyebrow {
+    margin: 0 0 10px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.technician-welcome-card__title {
+    margin: 0 0 12px;
+    color: #16324f;
+    font-size: 34px;
+    line-height: 1.15;
+}
+
+.technician-welcome-card__description {
+    margin: 0 0 18px;
+    color: #475569;
+    font-size: 16px;
+    line-height: 1.6;
+    max-width: 760px;
+}
+
+.technician-welcome-card__meta {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.technician-welcome-card__meta span {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: #f8fafc;
+    border: 1px solid #dbe4ee;
+    color: #16324f;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+/* STATUS */
+.technician-status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.technician-status-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid #dbe4ee;
+}
+
+.technician-status-item--full {
+    grid-column: 1 / -1;
+}
+
+.technician-status-item__label {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.technician-status-item__value {
+    color: #16324f;
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: 700;
+}
+
+/* REPUTATION */
+.technician-reputation {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.technician-reputation__score {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.technician-reputation__rating {
+    font-size: 52px;
+    line-height: 1;
+    font-weight: 800;
+    color: #16324f;
+}
+
+.technician-reputation__stars {
+    font-size: 28px;
+    color: #d97706;
+}
+
+.technician-reputation__reviews {
+    margin: 0;
+    color: #475569;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* PUBLIC PREVIEW */
+.technician-public-preview-card {
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.technician-public-preview-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 32px rgba(15, 23, 42, 0.08);
+    border-color: #cbd5e1;
+    background: #fbfdff;
+}
+
+.technician-public-preview-card__subtitle {
+    margin: 8px 0 0;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.technician-public-preview {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+}
+
+.technician-public-preview__avatar {
+    width: 92px;
+    height: 92px;
+    min-width: 92px;
+    min-height: 92px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #dbe7f3;
+    border: 1.5px solid #111827;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.technician-public-preview__avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.technician-public-preview__avatar-initials {
+    font-size: 30px;
+    font-weight: 800;
+    color: #16324f;
+}
+
+.technician-public-preview__body {
+    flex: 1;
+}
+
+.technician-public-preview__name {
+    margin: 0 0 8px;
+    color: #16324f;
+    font-size: 22px;
+}
+
+.technician-public-preview__sector,
+.technician-public-preview__location {
+    margin: 0 0 8px;
+    color: #475569;
+    font-size: 15px;
+}
+
+.technician-public-preview__badges {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    margin-bottom: 16px;
+}
+
+.technician-public-preview__rating,
+.technician-public-preview__badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.technician-public-preview__rating {
+    background: #fff7ed;
+    color: #b45309;
+    border: 1px solid #fed7aa;
+}
+
+.technician-public-preview__badge {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+}
+
+.technician-public-preview__whatsapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    overflow: hidden;
+}
+
+.technician-public-preview__whatsapp--available {
+    background: #25d366;
+    color: white;
+    cursor: default;
+    opacity: 1;
+}
+
+.technician-public-preview__whatsapp--unavailable {
+    background: #dc2626;
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.9;
+}
+
+.technician-public-preview__whatsapp:disabled {
+    pointer-events: none;
+}
+
+.technician-public-preview__whatsapp-image {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    display: block;
+}
+
+.technician-public-preview__whatsapp-text {
+    display: inline-flex;
+    align-items: center;
+}
+
+.technician-public-preview__stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.technician-public-preview__stat {
+    padding: 14px;
+    border-radius: 16px;
+    background: #f8fafc;
+    border: 1px solid #dbe4ee;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.technician-public-preview__stat-value {
+    color: #16324f;
+    font-size: 24px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.technician-public-preview__stat-label {
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1100px) {
+
+    .technician-home-page__top-grid,
+    .technician-home-page__content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .technician-home-page__main {
+        padding: 20px 16px 40px;
+    }
+
+    .technician-welcome-card__title {
+        font-size: 28px;
+    }
+
+    .technician-status-grid,
+    .technician-public-preview__stats {
+        grid-template-columns: 1fr;
+    }
+
+    .technician-public-preview {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

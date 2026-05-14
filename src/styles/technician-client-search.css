@@ -1,0 +1,369 @@
+.technician-client-search-page {
+    min-height: 100vh;
+    background: #f4f6f8;
+    color: #1f2a37;
+    font-family: Arial, sans-serif;
+}
+
+.technician-client-search-page__main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 24px 56px;
+}
+
+.technician-client-search-page__error {
+    margin: 0 0 24px;
+    color: #b42318;
+    background: #fef3f2;
+    border: 1px solid #fecdca;
+    padding: 14px 16px;
+    border-radius: 12px;
+}
+
+.technician-client-search-page__results-area {
+    min-height: 220px;
+}
+
+.technician-client-search-page__results-status {
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.technician-client-search-page__results-loading,
+.technician-client-search-page__initial-loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: white;
+    border: 1px solid #dbe4ee;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+    color: #16324f;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.technician-client-search-header {
+    background: linear-gradient(135deg, #ffffff 0%, #eef4fa 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 24px;
+}
+
+.technician-client-search-header__eyebrow {
+    margin: 0 0 10px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.technician-client-search-header__title {
+    margin: 0 0 12px;
+    color: #16324f;
+    font-size: 36px;
+    line-height: 1.15;
+}
+
+.technician-client-search-header__description {
+    margin: 0;
+    max-width: 760px;
+    color: #475569;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.technician-client-filters {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    padding: 24px;
+    margin-bottom: 24px;
+}
+
+.technician-client-filters__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.technician-client-filters__field {
+    display: flex;
+    flex-direction: column;
+}
+
+.technician-client-filters__field label {
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: #16324f;
+}
+
+.technician-client-filters__control {
+    width: 100%;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 14px;
+    background: white;
+    font-family: inherit;
+    box-sizing: border-box;
+}
+
+.technician-client-filters__actions {
+    margin-top: 18px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.technician-client-filters__clear {
+    border: 1px solid #cbd5e1;
+    background: white;
+    color: #16324f;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.technician-client-results {
+    margin-top: 8px;
+}
+
+.technician-client-results__header {
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.technician-client-results__title {
+    margin: 0;
+    color: #16324f;
+    font-size: 28px;
+}
+
+.technician-client-results__count {
+    margin: 0;
+    color: #475569;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.technician-client-results__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+    align-items: stretch;
+}
+
+.technician-client-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.05);
+    min-height: 280px;
+    box-sizing: border-box;
+}
+
+.technician-client-card__avatar {
+    width: 88px;
+    height: 88px;
+    min-width: 88px;
+    min-height: 88px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #dbe7f3;
+    border: 1.5px solid #111827;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.technician-client-card__avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.technician-client-card__avatar-initials {
+    font-size: 28px;
+    font-weight: 800;
+    color: #16324f;
+}
+
+.technician-client-card__body {
+    text-align: center;
+    flex: 1;
+    width: 100%;
+}
+
+.technician-client-card__name {
+    margin: 0 0 10px;
+    color: #16324f;
+    font-size: 18px;
+    line-height: 1.35;
+}
+
+.technician-client-card__location {
+    margin: 0;
+    color: #475569;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.technician-client-card__footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.technician-client-card__whatsapp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    border: none;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.technician-client-card__whatsapp:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.technician-client-card__whatsapp--available {
+    background: #25d366;
+    color: white;
+}
+
+.technician-client-card__whatsapp--unavailable {
+    background: #dc2626;
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.9;
+}
+
+.technician-client-card__whatsapp-image {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    display: block;
+}
+
+.technician-client-card__whatsapp-text {
+    display: inline-flex;
+    align-items: center;
+}
+
+.technician-client-empty-state {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    padding: 32px;
+    text-align: center;
+}
+
+.technician-client-empty-state__title {
+    margin: 0 0 12px;
+    color: #16324f;
+    font-size: 28px;
+}
+
+.technician-client-empty-state__description {
+    margin: 0 0 20px;
+    color: #475569;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.technician-client-empty-state__button {
+    border: none;
+    background: #16324f;
+    color: white;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+@media (max-width: 1200px) {
+    .technician-client-filters__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .technician-client-results__grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 992px) {
+    .technician-client-results__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .technician-client-results__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .technician-client-search-page__main {
+        padding: 20px 16px 40px;
+    }
+
+    .technician-client-search-header {
+        padding: 24px;
+    }
+
+    .technician-client-search-header__title {
+        font-size: 30px;
+    }
+
+    .technician-client-filters__grid {
+        grid-template-columns: 1fr;
+    }
+
+    .technician-client-results__grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.technician-client-search-page__load-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.technician-client-search-page__load-more-button {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    background: #16324f;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.technician-client-search-page__load-more-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

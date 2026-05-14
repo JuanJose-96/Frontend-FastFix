@@ -1,0 +1,102 @@
+.client-reviews-page {
+    min-height: 100vh;
+    background: #f4f6f8;
+    color: #1f2a37;
+    font-family: Arial, sans-serif;
+}
+
+.client-reviews-page__main {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 24px 24px 56px;
+}
+
+.client-reviews-page__error {
+    margin: 0 0 24px;
+    color: #b42318;
+    background: #fef3f2;
+    border: 1px solid #fecdca;
+    padding: 14px 16px;
+    border-radius: 12px;
+}
+
+.client-reviews-page__loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    border-radius: 999px;
+    background: white;
+    border: 1px solid #dbe4ee;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+    color: #16324f;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.client-reviews-header {
+    background: linear-gradient(135deg, #ffffff 0%, #eef4fa 100%);
+    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 32px;
+    margin-bottom: 24px;
+}
+
+.client-reviews-header__eyebrow {
+    margin: 0 0 10px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.client-reviews-header__title {
+    margin: 0 0 12px;
+    color: #16324f;
+    font-size: 36px;
+    line-height: 1.15;
+}
+
+.client-reviews-header__description {
+    margin: 0;
+    max-width: 760px;
+    color: #475569;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+.client-reviewed-technicians-empty {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 22px;
+    padding: 32px;
+    text-align: center;
+}
+
+.client-reviewed-technicians-empty__title {
+    margin: 0 0 12px;
+    color: #16324f;
+    font-size: 28px;
+}
+
+.client-reviewed-technicians-empty__description {
+    margin: 0;
+    color: #475569;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .client-reviews-page__main {
+        padding: 20px 16px 40px;
+    }
+
+    .client-reviews-header {
+        padding: 24px;
+    }
+
+    .client-reviews-header__title {
+        font-size: 30px;
+    }
+}
