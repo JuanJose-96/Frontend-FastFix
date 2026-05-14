@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import '../../styles/client-technician-card.css'
 
-function ClientTechnicianCard({ technician, reviewMeta }) {
+function ClientTechnicianCard({ technician, reviewMeta, isVisuallyMuted = false }) {
     const navigate = useNavigate()
 
     const fullName = `${technician.name || ''} ${technician.surname || ''}`.trim()
@@ -61,7 +61,8 @@ function ClientTechnicianCard({ technician, reviewMeta }) {
 
     return (
         <article
-            className="client-technician-card"
+            className={`client-technician-card ${isVisuallyMuted ? 'client-technician-card--muted' : ''
+                }`}
             onClick={handleOpenPublicProfile}
             onKeyDown={handleCardKeyDown}
             role="button"

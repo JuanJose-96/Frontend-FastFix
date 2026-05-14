@@ -252,3 +252,70 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+.technician-explore-page__load-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.technician-explore-page__load-more-button {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    background: #16324f;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.technician-explore-page__load-more-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.technician-explore-page__visual-tools {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+.technician-explore-page__checkbox-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid #d7dee7;
+    border-radius: 12px;
+    background: #ffffff;
+    color: #16324f;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.technician-explore-page__checkbox-label input {
+    margin: 0;
+}
+
+.technician-explore-page__load-more {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.technician-explore-page__load-more-button {
+    border: none;
+    border-radius: 12px;
+    padding: 12px 18px;
+    background: #16324f;
+    color: white;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.technician-explore-page__load-more-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}

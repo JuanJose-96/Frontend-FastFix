@@ -66,22 +66,6 @@ function TechnicianClientFilters({
                         ))}
                     </select>
                 </div>
-
-                <div className="technician-client-filters__field">
-                    <label htmlFor="whatsappAvailability">WhatsApp</label>
-                    <select
-                        id="whatsappAvailability"
-                        name="whatsappAvailability"
-                        value={filters.whatsappAvailability}
-                        onChange={onFilterChange}
-                        disabled={loadingFilters}
-                        className="technician-client-filters__control"
-                    >
-                        <option value="all">Todos</option>
-                        <option value="available">Disponible</option>
-                        <option value="unavailable">No disponible</option>
-                    </select>
-                </div>
             </div>
 
             <div className="technician-client-filters__actions">
