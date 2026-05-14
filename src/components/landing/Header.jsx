@@ -26,7 +26,7 @@ function Header() {
                         className="landing-header__link"
                         onClick={() => scrollToSection('what-is-fastfix')}
                     >
-                        ¿Qué es FastFix?
+                        ¿Por qué FastFix?
                     </button>
 
                     <button
