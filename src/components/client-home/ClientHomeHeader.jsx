@@ -1,5 +1,5 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { clearClientSession } from '../../utils/clientSession'
+import { clearClientSession } from '../../utils/ClientSession'
 import '../../styles/client-header.css'
 
 const NAV_ITEMS = [
