@@ -29,10 +29,18 @@ function TechnicianExplorePage() {
     const [sectors, setSectors] = useState([])
     const [provinces, setProvinces] = useState([])
     const [allLocations, setAllLocations] = useState([])
+
     const [technicians, setTechnicians] = useState([])
+    const [currentPage, setCurrentPage] = useState(0)
+    const [totalPages, setTotalPages] = useState(0)
+    const [totalElements, setTotalElements] = useState(0)
+    const [hasNextPage, setHasNextPage] = useState(false)
+
+    const [highlightEmergencyOnly, setHighlightEmergencyOnly] = useState(false)
 
     const [loadingFilters, setLoadingFilters] = useState(true)
     const [isRefreshingResults, setIsRefreshingResults] = useState(true)
+    const [isLoadingMore, setIsLoadingMore] = useState(false)
     const [pageError, setPageError] = useState('')
     const [hasLoadedResultsOnce, setHasLoadedResultsOnce] = useState(false)
     const [hasInitializedFromQueryParams, setHasInitializedFromQueryParams] =
@@ -121,7 +129,7 @@ function TechnicianExplorePage() {
         if (!hasInitializedFromQueryParams) return
 
         const debounceId = setTimeout(() => {
-            async function loadTechnicians() {
+            async function loadFirstPage() {
                 const currentRequestId = ++requestIdRef.current
 
                 try {
@@ -133,29 +141,20 @@ function TechnicianExplorePage() {
                         province: filters.province || undefined,
                         city: filters.city || undefined,
                         rating: filters.rating ? Number(filters.rating) : undefined,
+                        page: 0,
                     }
 
-                    const techniciansData = await searchTechnicians(searchFilters)
+                    const pagedResult = await searchTechnicians(searchFilters)
 
                     if (currentRequestId !== requestIdRef.current) {
                         return
                     }
 
-                    const sortedTechnicians = [...techniciansData].sort((a, b) => {
-                        const ratingA = a.averageRating || 0
-                        const ratingB = b.averageRating || 0
-
-                        if (ratingB !== ratingA) {
-                            return ratingB - ratingA
-                        }
-
-                        const nameA = `${a.name || ''} ${a.surname || ''}`.trim().toLowerCase()
-                        const nameB = `${b.name || ''} ${b.surname || ''}`.trim().toLowerCase()
-
-                        return nameA.localeCompare(nameB, 'es', { sensitivity: 'base' })
-                    })
-
-                    setTechnicians(sortedTechnicians)
+                    setTechnicians(pagedResult.content)
+                    setCurrentPage(pagedResult.currentPage)
+                    setTotalPages(pagedResult.totalPages)
+                    setTotalElements(pagedResult.totalElements)
+                    setHasNextPage(pagedResult.hasNext)
                     setHasLoadedResultsOnce(true)
                 } catch (error) {
                     if (currentRequestId !== requestIdRef.current) {
@@ -165,6 +164,10 @@ function TechnicianExplorePage() {
                     console.error('Error cargando técnicos:', error)
                     setPageError('No se pudieron cargar los técnicos')
                     setTechnicians([])
+                    setCurrentPage(0)
+                    setTotalPages(0)
+                    setTotalElements(0)
+                    setHasNextPage(false)
                     setHasLoadedResultsOnce(true)
                 } finally {
                     if (currentRequestId === requestIdRef.current) {
@@ -173,7 +176,7 @@ function TechnicianExplorePage() {
                 }
             }
 
-            loadTechnicians()
+            loadFirstPage()
         }, 250)
 
         return () => clearTimeout(debounceId)
@@ -226,6 +229,45 @@ function TechnicianExplorePage() {
         setFilters(INITIAL_FILTERS)
     }
 
+    function handleToggleEmergencyHighlight() {
+        setHighlightEmergencyOnly((previousValue) => !previousValue)
+    }
+
+    async function handleLoadMore() {
+        if (isLoadingMore || !hasNextPage) return
+
+        try {
+            setIsLoadingMore(true)
+            setPageError('')
+
+            const nextPage = currentPage + 1
+
+            const searchFilters = {
+                sectorId: filters.sectorId ? Number(filters.sectorId) : undefined,
+                province: filters.province || undefined,
+                city: filters.city || undefined,
+                rating: filters.rating ? Number(filters.rating) : undefined,
+                page: nextPage,
+            }
+
+            const pagedResult = await searchTechnicians(searchFilters)
+
+            setTechnicians((previousTechnicians) => [
+                ...previousTechnicians,
+                ...pagedResult.content,
+            ])
+            setCurrentPage(pagedResult.currentPage)
+            setTotalPages(pagedResult.totalPages)
+            setTotalElements(pagedResult.totalElements)
+            setHasNextPage(pagedResult.hasNext)
+        } catch (error) {
+            console.error('Error cargando más técnicos:', error)
+            setPageError('No se pudieron cargar más técnicos')
+        } finally {
+            setIsLoadingMore(false)
+        }
+    }
+
     if (!client) {
         return null
     }
@@ -266,7 +308,37 @@ function TechnicianExplorePage() {
                     </div>
 
                     {technicians.length > 0 && (
-                        <TechnicianResultsGrid technicians={technicians} />
+                        <>
+                            <div className="technician-explore-page__visual-tools">
+                                <label className="technician-explore-page__checkbox-label">
+                                    <input
+                                        type="checkbox"
+                                        checked={highlightEmergencyOnly}
+                                        onChange={handleToggleEmergencyHighlight}
+                                    />
+                                    <span>Resaltar técnicos con urgencias</span>
+                                </label>
+                            </div>
+
+                            <TechnicianResultsGrid
+                                technicians={technicians}
+                                totalElements={totalElements}
+                                highlightEmergencyOnly={highlightEmergencyOnly}
+                            />
+
+                            {hasNextPage && (
+                                <div className="technician-explore-page__load-more">
+                                    <button
+                                        type="button"
+                                        className="technician-explore-page__load-more-button"
+                                        onClick={handleLoadMore}
+                                        disabled={isLoadingMore}
+                                    >
+                                        {isLoadingMore ? 'Cargando...' : 'Cargar más'}
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     )}
 
                     {showEmptyState && (

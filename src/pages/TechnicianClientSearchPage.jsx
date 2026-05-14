@@ -13,7 +13,6 @@ const INITIAL_FILTERS = {
     name: '',
     province: '',
     city: '',
-    whatsappAvailability: 'all',
 }
 
 function TechnicianClientSearchPage() {
@@ -42,10 +41,16 @@ function TechnicianClientSearchPage() {
     const [filters, setFilters] = useState(INITIAL_FILTERS)
     const [provinces, setProvinces] = useState([])
     const [allLocations, setAllLocations] = useState([])
+
     const [clients, setClients] = useState([])
+    const [currentPage, setCurrentPage] = useState(0)
+    const [totalPages, setTotalPages] = useState(0)
+    const [totalElements, setTotalElements] = useState(0)
+    const [hasNextPage, setHasNextPage] = useState(false)
 
     const [loadingFilters, setLoadingFilters] = useState(true)
     const [isRefreshingResults, setIsRefreshingResults] = useState(true)
+    const [isLoadingMore, setIsLoadingMore] = useState(false)
     const [pageError, setPageError] = useState('')
     const [hasLoadedResultsOnce, setHasLoadedResultsOnce] = useState(false)
 
@@ -105,47 +110,33 @@ function TechnicianClientSearchPage() {
             .sort((a, b) => a.label.localeCompare(b.label, 'es', { sensitivity: 'base' }))
     }, [allLocations, filters.province, provinces])
 
-    const visibleClients = useMemo(() => {
-        if (filters.whatsappAvailability === 'available') {
-            return clients.filter((client) => client.whatsappAvailable)
-        }
-
-        if (filters.whatsappAvailability === 'unavailable') {
-            return clients.filter((client) => !client.whatsappAvailable)
-        }
-
-        return clients
-    }, [clients, filters.whatsappAvailability])
-
     useEffect(() => {
         if (!technician) return
 
         const debounceId = setTimeout(() => {
-            async function loadClients() {
+            async function loadFirstPage() {
                 const currentRequestId = ++requestIdRef.current
 
                 try {
                     setIsRefreshingResults(true)
                     setPageError('')
 
-                    const clientsData = await searchClients({
+                    const pagedResult = await searchClients({
                         name: filters.name || undefined,
                         province: filters.province || undefined,
                         city: filters.city || undefined,
+                        page: 0,
                     })
 
                     if (currentRequestId !== requestIdRef.current) {
                         return
                     }
 
-                    const sortedClients = [...clientsData].sort((a, b) => {
-                        const nameA = `${a.name || ''} ${a.surname || ''}`.trim().toLowerCase()
-                        const nameB = `${b.name || ''} ${b.surname || ''}`.trim().toLowerCase()
-
-                        return nameA.localeCompare(nameB, 'es', { sensitivity: 'base' })
-                    })
-
-                    setClients(sortedClients)
+                    setClients(pagedResult.content)
+                    setCurrentPage(pagedResult.currentPage)
+                    setTotalPages(pagedResult.totalPages)
+                    setTotalElements(pagedResult.totalElements)
+                    setHasNextPage(pagedResult.hasNext)
                     setHasLoadedResultsOnce(true)
                 } catch (error) {
                     if (currentRequestId !== requestIdRef.current) {
@@ -155,6 +146,10 @@ function TechnicianClientSearchPage() {
                     console.error('Error cargando clientes:', error)
                     setPageError('No se pudieron cargar los clientes')
                     setClients([])
+                    setCurrentPage(0)
+                    setTotalPages(0)
+                    setTotalElements(0)
+                    setHasNextPage(false)
                     setHasLoadedResultsOnce(true)
                 } finally {
                     if (currentRequestId === requestIdRef.current) {
@@ -163,7 +158,7 @@ function TechnicianClientSearchPage() {
                 }
             }
 
-            loadClients()
+            loadFirstPage()
         }, 300)
 
         return () => clearTimeout(debounceId)
@@ -192,6 +187,38 @@ function TechnicianClientSearchPage() {
         setFilters(INITIAL_FILTERS)
     }
 
+    async function handleLoadMore() {
+        if (isLoadingMore || !hasNextPage) return
+
+        try {
+            setIsLoadingMore(true)
+            setPageError('')
+
+            const nextPage = currentPage + 1
+
+            const pagedResult = await searchClients({
+                name: filters.name || undefined,
+                province: filters.province || undefined,
+                city: filters.city || undefined,
+                page: nextPage,
+            })
+
+            setClients((previousClients) => [
+                ...previousClients,
+                ...pagedResult.content,
+            ])
+            setCurrentPage(pagedResult.currentPage)
+            setTotalPages(pagedResult.totalPages)
+            setTotalElements(pagedResult.totalElements)
+            setHasNextPage(pagedResult.hasNext)
+        } catch (error) {
+            console.error('Error cargando más clientes:', error)
+            setPageError('No se pudieron cargar más clientes')
+        } finally {
+            setIsLoadingMore(false)
+        }
+    }
+
     if (!technician) {
         return null
     }
@@ -199,7 +226,7 @@ function TechnicianClientSearchPage() {
     const showEmptyState =
         hasLoadedResultsOnce &&
         !isRefreshingResults &&
-        visibleClients.length === 0 &&
+        clients.length === 0 &&
         !pageError
 
     return (
@@ -235,8 +262,26 @@ function TechnicianClientSearchPage() {
                         )}
                     </div>
 
-                    {visibleClients.length > 0 && (
-                        <TechnicianClientResultsGrid clients={visibleClients} />
+                    {clients.length > 0 && (
+                        <>
+                            <TechnicianClientResultsGrid
+                                clients={clients}
+                                totalElements={totalElements}
+                            />
+
+                            {hasNextPage && (
+                                <div className="technician-client-search-page__load-more">
+                                    <button
+                                        type="button"
+                                        className="technician-client-search-page__load-more-button"
+                                        onClick={handleLoadMore}
+                                        disabled={isLoadingMore}
+                                    >
+                                        {isLoadingMore ? 'Cargando...' : 'Cargar más'}
+                                    </button>
+                                </div>
+                            )}
+                        </>
                     )}
 
                     {showEmptyState && (
